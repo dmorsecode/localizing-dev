@@ -69,7 +69,7 @@ Follow these steps to set up and run PostgreSQL quickly in a container:
    ```
 
 4. Create or Update local environments file.
-    - Using the .env.example file, create a .env.local file and add the following database connection info:
+    - Using the .env.example file, create a .env file and add the following database connection info:
     ```bash
     DATABASE_URL="postgres://postgres:mysecretpassword@local:5432/neondb"
     ```
@@ -83,7 +83,7 @@ Follow these steps to set up and run PostgreSQL quickly in a container:
      - Username: `postgres`
      - Password: `mysecretpassword`
 
-6. **(Optional)Stop the container (when needed):**
+6. **(Optional) Stop the container (when needed):**
    ```bash
    docker stop postgres-local
    ```
@@ -171,5 +171,11 @@ You can access Storybook at **http://localhost:6006** after starting the server.
 ## **Contributing**
 
 Feel free to submit issues and pull requests to improve the project.
+
+---
+
+## **License**
+
+This project is licensed under the [MIT License](LICENSE).
 
 ---
