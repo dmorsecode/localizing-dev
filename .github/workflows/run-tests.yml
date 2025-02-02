@@ -2,6 +2,8 @@
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
 name: Node.js CI
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
 on:
   workflow_dispatch:
@@ -24,7 +26,7 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - name: Run Vitest
-      run: vitest run
+      run: npm run test:unit run
   playwright:
     runs-on: ubuntu-latest
     steps:
