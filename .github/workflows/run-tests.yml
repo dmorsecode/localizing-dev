@@ -4,6 +4,8 @@
 name: Node.js CI
 env:
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID}}
+  GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET}}
 
 on:
   workflow_dispatch:
