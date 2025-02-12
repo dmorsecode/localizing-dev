@@ -5,7 +5,7 @@
 	let { data }: PageProps = $props();
 </script>
 
-<h1>Hello, {data.user.username}!</h1>
+<h1>Hello, {data.user.username} (GitHub ID: {data.user.githubId})!</h1>
 <img alt="{data.user.username}'s Avatar" src="{data.user.avatar}" class="h-[50px]" />
 <br/>
 
