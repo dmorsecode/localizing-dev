@@ -8,8 +8,12 @@ export async function load(event: RequestEvent) {
 		return redirect(302, "/login");
 	}
 
+	const repos = await fetch(`https://api.github.com/users/${event.locals.user.username}/repos`);
+	const reposJson = await repos.json();
+
 	return {
-		user: event.locals.user
+		user: event.locals.user,
+		repos: reposJson
 	};
 }
 
