@@ -53,7 +53,7 @@ Follow these steps to set up and run PostgreSQL quickly in a container:
 
 1. **Initialize PostgreSQL in a Docker container:**
    ```bash
-   docker run --name postgres-local -e POSTGRES_PASSWORD=mysecretpassword -p 5432:5432 -d postgres
+   docker run --name postgres-local -e POSTGRES_PASSWORD=xxxxxxx -p 5432:5432 -d postgres
    ```
     > **_NOTE:_** If this image is not currently on your computer, you will see a brief error, but docker should immediately download the image from docker hub and start the container.
 
@@ -71,7 +71,9 @@ Follow these steps to set up and run PostgreSQL quickly in a container:
 4. Create or Update local environments file.
     - Using the .env.example file, create a .env file and add the following database connection info:
     ```bash
-    DATABASE_URL="postgres://postgres:mysecretpassword@local:5432/neondb"
+    DATABASE_URL="postgres://postgres:xxxxxxx@localhost:5432/neondb"
+    GITHUB_CLIENT_ID="xxxxxxxxxxxxx"
+    GITHUB_CLIENT_SECRET="xxxxxxxxxxxxxxxxxxxxxxxxxxx"
     ```
 
     > **_NOTE:_** .env will not be committed to the repository so make sure you have a backup of this file. Without this file, Drizzle will not work correctly.
@@ -81,7 +83,7 @@ Follow these steps to set up and run PostgreSQL quickly in a container:
      - Host: `localhost`
      - Port: `5432`
      - Username: `postgres`
-     - Password: `mysecretpassword`
+     - Password: `xxxxxxx`
 
 6. **(Optional) Stop the container (when needed):**
    ```bash
