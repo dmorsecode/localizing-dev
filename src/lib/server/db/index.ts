@@ -19,4 +19,35 @@ CREATE TABLE IF NOT EXISTS "session" (
 	user_id text REFERENCES "user" (id),
 	expires_at timestamp with time zone NOT NULL
 );
+CREATE TABLE IF NOT EXISTS "leaderboard" (
+	L_ID text PRIMARY KEY,
+	userID text NOT NULL REFERENCES "user" (id),
+	L_Score integer DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS "requests" (
+	R_ID text PRIMARY KEY,
+	requestor_id text NOT NULL REFERENCES "user" (id),
+	repo_URL text NOT NULL,
+	current_language text NOT NULL,
+	requested_language text NOT NULL,
+	status text DEFAULT 'open',
+	created_at timestamp DEFAULT now(),
+	expires_at timestamp DEFAULT (now() + '60 days'::interval)
+);
+CREATE TABLE IF NOT EXISTS "submission" (
+	S_ID text PRIMARY KEY,
+	request_id text NOT NULL REFERENCES "requests" (R_ID),
+	T_ID text NOT NULL REFERENCES "user" (id),
+	pull_URL text,
+	submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+	status text DEFAULT 'pending'::text
+);
+CREATE TABLE IF NOT EXISTS "reviews" (
+	RV_ID text PRIMARY KEY,
+	submission_id text NOT NULL REFERENCES "submission" ("S_ID"),
+	reviewer_id text NOT NULL REFERENCES "user" (id),
+	rating integer,
+	comments text,
+	reviewed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 `);
