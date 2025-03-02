@@ -18,6 +18,7 @@
 		"db:push": "drizzle-kit push",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
+		"db:generate": "drizzle-kit generate",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build"
 	},

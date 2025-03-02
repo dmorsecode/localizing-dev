@@ -22,7 +22,7 @@ export async function createUser(
 		const newUser = insertedUsers[0];
 
 		await tx.insert(leaderboard)
-		.values({ userID: newUser.id, L_Score: 0})
+		.values({ user_id: newUser.id, l_score: 0})
 		.returning();
 
 		return [newUser];
