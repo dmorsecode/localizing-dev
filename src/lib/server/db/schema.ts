@@ -35,7 +35,7 @@ export const requests = pgTable('requests', {
 	tag01: text('tag01'),
 	tag02: text('tag02'),
 	created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow(),
-	expires_at: timestamp('expired_at', { withTimezone: true})
+	expires_at: timestamp('expires_at', { withTimezone: true})
 });
 
 export const languages = pgTable('languages', {
