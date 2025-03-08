@@ -63,8 +63,8 @@ CREATE TABLE IF NOT EXISTS tags (
 CREATE TABLE IF NOT EXISTS "submission" (
 	s_id text PRIMARY KEY,
 	request_id text NOT NULL REFERENCES "requests" (r_id),
-	T_ID text NOT NULL REFERENCES "user" (id),
-	pull_URL text,
+	translator_id text NOT NULL REFERENCES "user" (id),
+	pull_url text,
 	submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 	status text DEFAULT 'on review'::text
 );
