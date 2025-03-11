@@ -5,7 +5,7 @@
 	export let user;
 </script>
 
-<header class="w-full flex justify-between items-center p-4 border-b bg-cyan-300/75">
+<header class="w-full flex justify-between items-center p-4 border-b bg-cyan-300">
 	<div class="flex gap-2 place-items-center">
 		<a href="/" class="text-2xl font-bold">localizing.dev</a>
 	</div>
