@@ -16,10 +16,10 @@
 		<a href="/repositories" class="text-sm font-semibold">Repositories</a>
 		{#if user}
 			<DropdownMenu.Root preventScroll={false}>
-				<DropdownMenu.Trigger>
+				<DropdownMenu.Trigger class="cursor-pointer">
 					<Avatar.Root>
 						<Avatar.Image src={user.avatar} alt={user.username} />
-						<Avatar.Fallback>{user.username}</Avatar.Fallback>
+						<Avatar.Fallback>{user.username[0].toUpperCase()}</Avatar.Fallback>
 					</Avatar.Root>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content>
@@ -36,7 +36,7 @@
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 		{:else}
-			<a href="/login" class="text-sm font-semibold">Login</a>
+			<a href="/login/github" class="text-sm font-semibold">Login</a>
 		{/if}
 	</div>
 </header>
