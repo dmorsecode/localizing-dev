@@ -8,16 +8,6 @@ export const db = drizzle(client);
 
 await db.execute(`
 
-DROP TABLE IF EXISTS "notifications" CASCADE;
-DROP TABLE IF EXISTS "reviews" CASCADE;
-DROP TABLE IF EXISTS "submission" CASCADE;
-DROP TABLE IF EXISTS "languages" CASCADE;
-DROP TABLE IF EXISTS "tags" CASCADE;
-DROP TABLE IF EXISTS "requests" CASCADE;
-DROP TABLE IF EXISTS "leaderboard" CASCADE;
-DROP TABLE IF EXISTS "session" CASCADE;
-DROP TABLE IF EXISTS "user" CASCADE;
-
 CREATE TABLE IF NOT EXISTS "user" (
 	id text PRIMARY KEY,
 	"githubId" integer NOT NULL UNIQUE,
