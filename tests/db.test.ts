@@ -16,9 +16,17 @@ const testClient = postgres(TEST_DB_URL);
 const testDb = drizzle(testClient, { schema });
 
 describe('Database Operations', () => {
-  beforeAll(async () => {
+  beforeAll(async () => {   
+
+    //Test database connection first
+    const result = await testDb.execute(sql`SELECT 1 as result`);
+    if (result[0]?.result !== 1) {
+      throw new Error('❌ Failed to establish database connection!');
+    }
+
     // Run migrations before all tests
     await migrate(testDb, { migrationsFolder: './drizzle' });
+
   });
 
   beforeEach(async () => {
