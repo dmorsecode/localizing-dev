@@ -12,11 +12,11 @@
 </script>
 
 <Card.Root class="shadow-sm border-gray-600/15 text-sm grow basis-1/3 max-w-[calc(50%-1rem)] md:basis-1/4 md:max-w-[calc(33%-1rem)] lg:basis-1/5 lg:max-w-[calc(25%-1rem)]">
-	<a href="{repo.html_url}">
+	<a href="{repo.html_url}" target="_blank" rel="noopener noreferrer">
 		<Card.Header class="p-2 pb-0 flex flex-row items-start gap-2">
 			<Avatar.Root>
 				<Avatar.Image src="{repo.owner.avatar_url}" alt="{repo.owner.login}" />
-				<Avatar.Fallback>CN</Avatar.Fallback>
+				<Avatar.Fallback>{repo.owner.login[0]}</Avatar.Fallback>
 			</Avatar.Root>
 			<div>
 				<Card.Title>{repo.name}</Card.Title>
