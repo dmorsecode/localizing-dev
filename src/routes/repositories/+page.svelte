@@ -16,4 +16,4 @@
 
 <Separator class="my-8" />
 
-<RepoGrid repos={data.repos} />
+<RepoGrid reposToDisplay={data.repos} />

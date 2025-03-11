@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidate, invalidateAll } from '$app/navigation';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
@@ -19,10 +20,17 @@
 
 	export let data: SuperValidated<Infer<FormSchema>>;
 	export let repos;
+	export let modalClose = () => { };
 
 	const form = superForm(data, {
 		dataType: 'json',
 		validators: zodClient(formSchema),
+		onResult: ({ result }) => {
+			if (result.type === 'success') {
+				modalClose();
+				invalidateAll();
+			}
+		},
 	});
 
 	const { form: formData, enhance, submitting } = form;
@@ -57,7 +65,6 @@
 				if (!v) return;
 				$formData.url = v.value;
 				$formData.description = repos.find((repo) => repo.html_url === v.value)?.description ?? "";
-				console.log($formData);
 			}}>
 				<Select.Trigger {...attrs}>
 					<Select.Value placeholder="Select a repository" />

@@ -19,12 +19,12 @@
 
 <div class="flex flex-col gap-4">
 <h1 class="text-3xl font-bold underline underline-offset-8 uppercase">Requests</h1>
-<RepoGrid repos={exampleRequests} dashRequests={true} />
+<RepoGrid reposToDisplay={exampleRequests} userRepos={data.repos} form={data.form} dashRequests={true} />
 </div>
 
 <Separator class="my-6" />
 
 <div class="flex flex-col gap-4">
 <h1 class="text-3xl font-bold underline underline-offset-8 uppercase">Contributions</h1>
-<RepoGrid repos={data.repos} dashRequests={false} />
+<RepoGrid reposToDisplay={data.repos} userRepos={data.repos} form={data.form} dashRequests={false} />
 </div>
