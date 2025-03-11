@@ -18,13 +18,13 @@
 <Separator class="my-4" />
 
 <div class="flex flex-col gap-4">
-<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">My Requests</h1>
+<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">Requests</h1>
 <RepoGrid repos={exampleRequests} dashRequests={true} />
 </div>
 
 <Separator class="my-6" />
 
 <div class="flex flex-col gap-4">
-<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">Favorited Repositories</h1>
+<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">Contributions</h1>
 <RepoGrid repos={data.repos} dashRequests={false} />
 </div>

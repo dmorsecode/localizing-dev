@@ -11,7 +11,7 @@
 	export let dashRequests = false;
 </script>
 
-<Card.Root class="shadow-sm border-gray-600/15 w-96 text-sm">
+<Card.Root class="shadow-sm border-gray-600/15 text-sm grow basis-1/3 max-w-[calc(50%-1rem)] md:basis-1/4 md:max-w-[calc(33%-1rem)] lg:basis-1/5 lg:max-w-[calc(25%-1rem)]">
 	<a href="{repo.html_url}">
 		<Card.Header class="p-2 pb-0 flex flex-row items-start gap-2">
 			<Avatar.Root>
@@ -30,13 +30,13 @@
 		<Table.Root class="text-xs">
 			<Table.Header>
 				<Table.Row>
-					<Table.Head class="px-0">Original</Table.Head>
+					<Table.Head class="px-2">Original</Table.Head>
 					<Table.Head class="px-0">Requested</Table.Head>
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
 				<Table.Row>
-					<Table.Cell class="px-0 align-top">English</Table.Cell>
+					<Table.Cell class="px-2 align-top">English</Table.Cell>
 					<Table.Cell class="px-0">Spanish<br />Chinese<br />Portuguese<br />Russian</Table.Cell>
 				</Table.Row>
 			</Table.Body>
@@ -56,7 +56,7 @@
 			</Button>
 			<Button href={`${repo.html_url + "/pulls"}`} target="_blank" rel="noopener noreferrer" variant="outline">
 				<GitPullRequest size={16} class="mr-2" />
-				View Contributions
+				View
 			</Button>
 		{/if}
 	</Card.Footer>
