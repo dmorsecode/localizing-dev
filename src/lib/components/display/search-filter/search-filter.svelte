@@ -1,8 +1,9 @@
 <script lang="ts">
 	import * as Select from '$lib/components/ui/select';
-	import { Badge } from "$lib/components/ui/badge";
+	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/input';
 	import { X } from 'lucide-svelte';
+	import TagComponent from '$lib/components/ui/tag/tag.svelte'
 	import SearchTags from '$lib/components/display/search-filter/search-tags.svelte';
 
 	interface Tag {
@@ -10,11 +11,11 @@
 		label: string;
 	}
 
-	let selectedTags: Array<Tag> = [{ value: "1", label: "Tag 1" },
-	{ value: "2", label: "Tag 2" },
-	{ value: "3", label: "Tag 3" },
-	{ value: "4", label: "Tag 4" },
-	{ value: "5", label: "Tag 5" }];
+	let selectedTags: Array<Tag> = [{ value: '1', label: 'Tag 1' },
+		{ value: '2', label: 'Tag 2' },
+		{ value: '3', label: 'Tag 3' },
+		{ value: '4', label: 'Tag 4' },
+		{ value: '5', label: 'Tag 5' }];
 
 	function addTag(tag: Tag) {
 		console.log(tag);
@@ -81,17 +82,11 @@
 		<h1 class="font-bold">FILTER BY TAGS</h1>
 		<SearchTags addTag={(v: Tag) => addTag(v)} />
 		<div>
-		{#each selectedTags as tag}
-			<button class="mr-2 mb-2" on:click={() => selectedTags = selectedTags.filter((t) => t.label !== tag.label)}>
-			<Badge class="shadow-md bg-cyan-300/25 border border-cyan-700/35 p-2 w-24 flex justify-between hover:scale-105 hover:bg-cyan-300/50 text-black transition-all">
-				{tag.label}
-				<X
-					size={16}
-					class="m-0 ml-2"
-				/>
-			</Badge>
-			</button>
-		{/each}
-			</div>
+			{#each selectedTags as tag}
+				<button class="mr-2 mb-2" on:click={() => selectedTags = selectedTags.filter((t) => t.label !== tag.label)}>
+					<TagComponent label={tag.label} />
+				</button>
+			{/each}
+		</div>
 	</div>
 </div>
