@@ -56,16 +56,16 @@
 	<div class="w-10/12 flex flex-col gap-2 uppercase">
 		<h1 class="font-bold">FILTER BY METRIC</h1>
 		<div class="flex flex-row items-center gap-2">
-			<Input placeholder="0" class="w-32" />
+			<Input placeholder="0" class="grow basis-1/3" />
 			<p>≤ &nbsp;&nbsp;Size&nbsp; (KB) ≤</p>
-			<Input placeholder="0" class="w-32" />
+			<Input placeholder="0" class="grow basis-1/3" />
 		</div>
 		<div class="flex flex-row items-center gap-2">
-			<Input placeholder="0" class="w-32" />
+			<Input placeholder="0" class="grow basis-1/3" />
 			<p>≤ Stars (KB) ≤</p>
-			<Input placeholder="0" class="w-32" />
+			<Input placeholder="0" class="grow basis-1/3" />
 		</div>
-		<div class="w-32">
+		<div class="w-full">
 			<Select.Root>
 				<Select.Trigger>
 					<Select.Value placeholder="License" />
