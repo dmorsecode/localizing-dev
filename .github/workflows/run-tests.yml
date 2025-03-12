@@ -36,12 +36,6 @@ jobs:
         node-version: lts/*
         cache: 'npm'
     - run: npm ci
-    - name: Ensure clean database (drop & recreate)
-        run: |
-          psql -h localhost -U admin -c "DROP DATABASE IF EXISTS neondb;"
-          psql -h localhost -U admin -c "CREATE DATABASE neondb;"
-        env:
-          PGPASSWORD: l10n
     - name: Run Vitest
       run: npm run test:unit run
       env:
