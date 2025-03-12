@@ -25,7 +25,7 @@ describe('Database Operations', () => {
     }
 
     // Run migrations before all tests
-    await migrate(testDb, { migrationsFolder: './drizzle' });
+    await migrate(testDb, { migrationsFolder: './drizzle', mode: 'reset' });
 
   });
 
