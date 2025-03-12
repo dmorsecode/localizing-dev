@@ -19,6 +19,8 @@ export default defineConfig({
         'tests/e2e/'
       ]
     },
+    hookTimeout: 30000, //30s
+    testTimeout: 30000, //30s
     suite: {
       allowEmpty: true
     },

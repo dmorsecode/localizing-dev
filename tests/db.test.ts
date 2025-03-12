@@ -7,25 +7,28 @@ import { db } from '../src/lib/server/db/index';
 import { eq } from 'drizzle-orm';
 import { env } from '$env/dynamic/private';
 import { sql } from 'drizzle-orm';
+import { setupDb, teardownDb, testDb } from './db.setup';
 
 
-const TEST_DB_URL = env.DATABASE_URL || 'postgres://localhost:5432/test_db';
+//const TEST_DB_URL = env.DATABASE_URL || 'postgres://localhost:5432/test_db';
 
 // Setup test database client
-const testClient = postgres(TEST_DB_URL);
-const testDb = drizzle(testClient, { schema });
+//const testClient = postgres(TEST_DB_URL);
+//const testDb = drizzle(testClient, { schema });
 
 describe('Database Operations', () => {
   beforeAll(async () => {   
 
-    //Test database connection first
-    const result = await testDb.execute(sql`SELECT 1 as result`);
-    if (result[0]?.result !== 1) {
-      throw new Error('❌ Failed to establish database connection!');
-    }
+    await setupDb();
 
-    // Run migrations before all tests
-    await migrate(testDb, { migrationsFolder: './drizzle', mode: 'reset' });
+    // //Test database connection first
+    // const result = await testDb.execute(sql`SELECT 1 as result`);
+    // if (result[0]?.result !== 1) {
+    //   throw new Error('❌ Failed to establish database connection!');
+    // }
+
+    // // Run migrations before all tests
+    // await migrate(testDb, { migrationsFolder: './drizzle', mode: 'reset' });
 
   });
 
@@ -40,7 +43,8 @@ describe('Database Operations', () => {
 
   afterAll(async () => {
     // Cleanup after all tests
-    await testClient.end();
+    //await testClient.end();
+    await teardownDb();
   });
 
   //TEST: User Operations

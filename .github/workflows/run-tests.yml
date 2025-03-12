@@ -20,15 +20,6 @@ on:
 jobs:
   vitest:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: l10n
-          POSTGRES_USER: admin
-          POSTGRES_DB: neondb
-        ports:
-          - 5432:5432
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -38,8 +29,6 @@ jobs:
     - run: npm ci
     - name: Run Vitest
       run: npm run test:unit run
-      env:
-        DATABASE_URL: postgres://admin:l10n@localhost:5432/neondb
   playwright:
     runs-on: ubuntu-latest
     steps:
