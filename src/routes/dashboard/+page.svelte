@@ -1,35 +1,30 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
 	import { enhance } from "$app/forms";
+	import ProfileBanner from '$lib/components/display/profile-banner/profile-banner.svelte';
+	import { Separator } from '$lib/components/ui/separator';
+	import RepoGrid from '$lib/components/display/repos/repo-grid.svelte';
 
 	let { data }: PageProps = $props();
+
+	let exampleRequests = [];
+	for (let i = 0; i < 3; i++) {
+		exampleRequests.push(data.repos[i]);
+	}
 </script>
 
-<h1>Hello, {data.user.username} (GitHub ID: {data.user.githubId})!</h1>
-<img alt="{data.user.username}'s Avatar" src="{data.user.avatar}" class="h-[50px]" />
-<br/>
+<ProfileBanner user={data.user} />
 
-<table class="border-separate border-spacing-2 text-left">
-	<thead>
-	<tr>
-		<th></th>
-		<th>Repository</th>
-		<th>Stars</th>
-		<th>Size</th>
-	</tr>
-	</thead>
-	<tbody>
-	{#each data.repos as repo}
-		<tr>
-			<td>{repo.owner.login}/</td>
-			<td><a href="{repo.html_url}" class="underline">{repo.name}</a></td>
-			<td>{repo.stargazers_count}</td>
-			<td>{repo.size}</td>
-		</tr>
-	{/each}
-	</tbody>
-</table>
+<Separator class="my-4" />
 
-<form method="post" use:enhance>
-	<button>Sign out</button>
-</form>
+<div class="flex flex-col gap-4">
+<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">Requests</h1>
+<RepoGrid reposToDisplay={exampleRequests} userRepos={data.repos} form={data.form} dashRequests={true} />
+</div>
+
+<Separator class="my-6" />
+
+<div class="flex flex-col gap-4">
+<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">Contributions</h1>
+<RepoGrid reposToDisplay={data.repos} userRepos={data.repos} form={data.form} dashRequests={false} />
+</div>
