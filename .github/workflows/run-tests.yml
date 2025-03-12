@@ -20,6 +20,15 @@ on:
 jobs:
   vitest:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: l10n
+          POSTGRES_USER: admin
+          POSTGRES_DB: neondb
+        ports:
+          - 5432:5432
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
