@@ -3,7 +3,7 @@
 
 name: Node.js CI
 env:
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  # DATABASE_URL: ${{ secrets.DATABASE_URL }}
   GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID}}
   GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET}}
 
@@ -16,19 +16,9 @@ on:
     branches:
     - main
     - develop
-
 jobs:
   vitest:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: l10n
-          POSTGRES_USER: admin
-          POSTGRES_DB: neondb
-        ports:
-          - 5432:5432
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -38,6 +28,8 @@ jobs:
     - run: npm ci
     - name: Run Vitest
       run: npm run test:unit run
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
   playwright:
     runs-on: ubuntu-latest
     steps:
@@ -51,3 +43,5 @@ jobs:
       run: npx playwright install --with-deps
     - name: Run Playwright Tests
       run: npx playwright test
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
