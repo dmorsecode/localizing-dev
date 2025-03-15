@@ -1,0 +1,140 @@
+// import { beforeAll, afterAll, beforeEach, describe, expect, it } from 'vitest';
+// import {
+// 	createReview,
+// 	getReviewById,
+// 	getReviewsBySubmissionId,
+// 	getReviewsByReviewerId,
+// 	updateReview,
+// 	deleteReview
+// } from '$lib/server/services/reviewService';
+
+// import { db } from '$lib/server/db';
+// import { sql } from 'drizzle-orm';
+// import * as schema from '$lib/server/db/schema';
+// import { setupDb, teardownDb, testDb } from './db.setup';
+
+
+// describe('Review Service', () => {
+// 	let requestId: string = crypto.randomUUID(); // ensure unique PK
+// 	let userId: string = crypto.randomUUID(); // ensure unique PK
+//   let translatorId: string = crypto.randomUUID(); // ensure unique PK
+//   let submissionId: string = crypto.randomUUID(); // ensure unique PK
+// 	let githubId: number = Math.floor(Math.random() * 1_000_000_000); // ensure unique PK
+
+// 	beforeAll(async () => {
+// 		await setupDb();
+// 	});
+
+// 	beforeEach(async () => {
+// 		// Clean the tables before each test
+// 		await db.execute(sql`
+//       TRUNCATE TABLE "reviews", "submission", "requests", "user" RESTART IDENTITY CASCADE;
+//     `);
+
+// 		// Insert dummy user and request
+// 		await db.insert(schema.user).values({
+// 			id: userId,
+// 			githubId: githubId,
+// 			username: 'reviewer',
+// 			avatar: 'https://avatar.example.com'
+// 		});
+
+// 		await db.insert(schema.user).values({
+// 			id: translatorId,
+// 			githubId: 67890,
+// 			username: 'translator',
+// 			avatar: 'https://avatar.example.com'
+// 		});
+
+// 		await db.insert(schema.requests).values({
+// 			r_id: requestId,
+// 			requestor_id: userId,
+// 			repo_url: 'https://github.com/example/repo',
+// 			current_language: 'typescript'
+// 		});
+
+// 		await db.insert(schema.submission).values({
+// 			s_id: submissionId,
+// 			request_id: requestId,
+// 			translator_id: translatorId,
+// 			pull_url: 'https://github.com/example/repo/pull/1'
+// 		});
+// 	});
+
+// 	afterAll(async () => {
+// 		await teardownDb();
+// 	});
+
+// 	it('should create a review', async () => {
+// 		const [review] = await createReview({
+// 			submission_id: submissionId,
+// 			reviewer_id: userId,
+// 			rating: 4,
+// 			comments: 'Great work!'
+// 		});
+
+// 		expect(review.submission_id).toBe(submissionId);
+// 		expect(review.reviewer_id).toBe(userId);
+// 		expect(review.rating).toBe(4);
+// 		expect(review.comments).toBe('Great work!');
+// 	});
+
+// 	it('should get a review by ID', async () => {
+// 		const [created] = await createReview({
+// 			submission_id: submissionId,
+// 			reviewer_id: userId,
+// 			rating: 5,
+// 			comments: 'Perfect'
+// 		});
+
+// 		const review = await getReviewById(created.rv_id);
+// 		expect(review?.rv_id).toBe(created.rv_id);
+// 		expect(review?.rating).toBe(5);
+// 		expect(review?.comments).toBe('Perfect');
+// 	});
+
+// 	it('should get all reviews for a submission', async () => {
+// 		await createReview({ submission_id: submissionId, reviewer_id: userId, rating: 3 });
+// 		await createReview({ submission_id: submissionId, reviewer_id: userId, rating: 4 });
+
+// 		const reviews = await getReviewsBySubmissionId(submissionId);
+// 		expect(reviews).toHaveLength(2);
+// 	});
+
+// 	it('should get all reviews by reviewer', async () => {
+// 		await createReview({ submission_id: submissionId, reviewer_id: userId, rating: 2 });
+// 		await createReview({ submission_id: submissionId, reviewer_id: userId, rating: 5 });
+
+// 		const reviews = await getReviewsByReviewerId(userId);
+// 		expect(reviews).toHaveLength(2);
+// 	});
+
+// 	it('should update a review', async () => {
+// 		const [created] = await createReview({
+// 			submission_id: submissionId,
+// 			reviewer_id: userId,
+// 			rating: 1,
+// 			comments: 'Needs improvement'
+// 		});
+
+// 		const [updated] = await updateReview(created.rv_id, {
+// 			rating: 4,
+// 			comments: 'Better now'
+// 		});
+
+// 		expect(updated.rating).toBe(4);
+// 		expect(updated.comments).toBe('Better now');
+// 	});
+
+// 	it('should delete a review', async () => {
+// 		const [created] = await createReview({
+// 			submission_id: submissionId,
+// 			reviewer_id: userId,
+// 			rating: 3
+// 		});
+
+// 		await deleteReview(created.rv_id);
+// 		const result = await getReviewById(created.rv_id);
+// 		expect(result).toBeNull();
+// 	});
+// });

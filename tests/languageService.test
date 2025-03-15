@@ -1,0 +1,101 @@
+// import { describe, it, expect, beforeEach, beforeAll, afterAll } from 'vitest';
+// import {
+// 	addLanguageToRequest,
+// 	getLanguagesByRequestId,
+// 	deleteLanguageFromRequest,
+// 	deleteAllLanguagesFromRequest
+// } from '$lib/server/services/languageService';
+// import { db } from '$lib/server/db';
+// import { sql } from 'drizzle-orm';
+// import * as schema from '$lib/server/db/schema';
+// import { setupDb, teardownDb, testDb } from './db.setup';
+
+
+// describe('Language Service', () => {
+// 	let requestId: string = crypto.randomUUID(); // ensure unique PK
+// 	let userId: string = crypto.randomUUID(); // ensure unique PK
+// 	let githubId: number = Math.floor(Math.random() * 1_000_000_000); // ensure unique PK
+
+// 	// Helper to create a dummy request (needed for foreign key)
+// 	const createRequest = async () => {
+// 		const [request] = await db
+// 			.insert(schema.requests)
+// 			.values({
+// 				requestor_id: userId, // Make sure this user exists or mock it
+// 				repo_url: 'https://github.com/example/repo',
+// 				current_language: 'javascript'
+// 			})
+// 			.returning();
+// 		return request;
+// 	};
+
+// 	beforeAll(async () => {
+// 		await setupDb();
+// 	});
+
+// 	beforeEach(async () => {
+// 		await db.execute(sql`TRUNCATE TABLE "languages", "requests", "user" RESTART IDENTITY CASCADE;`);
+
+// 		// Insert user so that request.requestor_id has a valid FK
+// 		await db.insert(schema.user).values({
+// 			id: userId,
+// 			githubId: githubId,
+// 			username: 'languser',
+// 			avatar: 'https://example.com/avatar.png'
+// 		});
+
+// 		// Insert the request that languages will reference
+// 		await db.insert(schema.requests).values({
+// 			r_id: requestId,
+// 			requestor_id: userId,
+// 			repo_url: 'https://github.com/example/repo',
+// 			current_language: 'typescript'
+// 		});
+// 	});
+
+// 	afterAll(async () => {
+// 		await teardownDb();
+// 	});
+
+// 	it('should add a language to a request', async () => {
+// 		const request = await createRequest();
+// 		await addLanguageToRequest(request.r_id, 'python');
+
+// 		const langs = await getLanguagesByRequestId(request.r_id);
+// 		expect(langs).toHaveLength(1);
+// 		expect(langs[0].language).toBe('python');
+// 	});
+
+// 	it('should get all languages for a request', async () => {
+// 		const request = await createRequest();
+// 		await addLanguageToRequest(request.r_id, 'javascript');
+// 		await addLanguageToRequest(request.r_id, 'typescript');
+
+// 		const langs = await getLanguagesByRequestId(request.r_id);
+// 		expect(langs).toHaveLength(2);
+// 		const langNames = langs.map((l) => l.language);
+// 		expect(langNames).toContain('javascript');
+// 		expect(langNames).toContain('typescript');
+// 	});
+
+// 	it('should delete a specific language from a request', async () => {
+// 		await addLanguageToRequest(requestId, 'typescript');
+// 		const beforeDelete = await getLanguagesByRequestId(requestId);
+// 		expect(beforeDelete).toHaveLength(1);
+
+// 		await deleteLanguageFromRequest(requestId, 'typescript');
+// 		const afterDelete = await getLanguagesByRequestId(requestId);
+// 		expect(afterDelete).toHaveLength(0);
+// 	});
+
+// 	it('should delete all languages for a request', async () => {
+// 		await addLanguageToRequest(requestId, 'typescript');
+// 		await addLanguageToRequest(requestId, 'javascript');
+// 		const beforeDelete = await getLanguagesByRequestId(requestId);
+// 		expect(beforeDelete).toHaveLength(2);
+
+// 		await deleteAllLanguagesFromRequest(requestId);
+// 		const afterDelete = await getLanguagesByRequestId(requestId);
+// 		expect(afterDelete).toHaveLength(0);
+// 	});
+// });

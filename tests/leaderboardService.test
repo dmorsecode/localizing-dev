@@ -1,0 +1,111 @@
+// import { beforeAll, afterAll, beforeEach, describe, expect, it } from 'vitest';
+// import {
+// 	createLeaderboardEntry,
+// 	getLeaderboardEntryByUserId,
+// 	getFullLeaderboard,
+// 	updateLeaderboardScore,
+// 	incrementLeaderboardScore,
+// 	deactivateLeaderboardEntry,
+// 	deleteLeaderboardEntry
+// } from '$lib/server/services/leaderboardService';
+// import { db } from '$lib/server/db';
+// import { sql } from 'drizzle-orm';
+// import * as schema from '$lib/server/db/schema';
+// import { setupDb, teardownDb, testDb } from './db.setup';
+
+
+// describe('Leaderboard Service', () => {
+//     let requestId: string = crypto.randomUUID(); // ensure unique PK
+//     let userId: string = crypto.randomUUID(); // ensure unique PK
+//     let githubId: number = Math.floor(Math.random() * 1_000_000_000); // ensure unique PK
+
+// 	beforeAll(async () => {
+// 		await setupDb();
+// 	});
+
+// 	beforeEach(async () => {
+// 		// Clean the tables before each test
+// 		await db.execute(sql`
+//       TRUNCATE TABLE "leaderboard", "user" RESTART IDENTITY CASCADE;
+//     `);
+
+// 		// Insert a dummy user for FK reference
+// 		await db.insert(schema.user).values({
+// 			id: userId,
+// 			githubId: githubId,
+// 			username: 'leaderuser',
+// 			avatar: 'https://avatar.url'
+// 		});
+// 	});
+
+// 	afterAll(async () => {
+// 		await teardownDb();
+// 	});
+
+// 	it('should create a leaderboard entry for a user', async () => {
+// 		const [entry] = await createLeaderboardEntry(userId, 100, true);
+// 		expect(entry.user_id).toBe(userId);
+// 		expect(entry.l_score).toBe(100);
+// 		expect(entry.is_active).toBe(true);
+// 	});
+
+// 	it('should get leaderboard entry by user ID', async () => {
+// 		const [created] = await createLeaderboardEntry(userId, 80);
+// 		const entry = await getLeaderboardEntryByUserId(userId);
+// 		expect(entry?.user_id).toBe(userId);
+// 		expect(entry?.l_score).toBe(80);
+// 	});
+
+// 	it('should get full leaderboard sorted by score', async () => {
+// 		await createLeaderboardEntry(userId, 50);
+
+// 		await db.insert(schema.user).values({
+// 			id: 'user2',
+// 			githubId: 88888,
+// 			username: 'user2',
+// 			avatar: 'https://avatar2.url'
+// 		});
+
+// 		await createLeaderboardEntry('user2', 150);
+
+// 		const leaderboard = await getFullLeaderboard();
+// 		expect(leaderboard).toHaveLength(2);
+// 		expect(leaderboard[0].l_score!).toBeGreaterThanOrEqual(leaderboard[1].l_score!);
+// 	});
+
+// 	it('should update a user leaderboard score', async () => {
+// 		await createLeaderboardEntry(userId, 10);
+// 		const [updated] = await updateLeaderboardScore(userId, 999);
+// 		expect(updated.l_score).toBe(999);
+// 	});
+
+// 	it('should increment a user leaderboard score', async () => {
+//         await createLeaderboardEntry(userId, 20);
+//         const result = await incrementLeaderboardScore(userId, 5);
+      
+//         expect(result).not.toBeNull();
+      
+//         const [updated] = result!;
+//         expect(updated.l_score).toBe(25);
+//       });
+      
+
+// 	it('should return null when incrementing score for nonexistent entry', async () => {
+// 		const result = await incrementLeaderboardScore('nonexistent-user-id', 10);
+// 		expect(result).toBeNull();
+// 	});
+
+// 	it('should deactivate a leaderboard entry', async () => {
+// 		await createLeaderboardEntry(userId, 10);
+// 		const [updated] = await deactivateLeaderboardEntry(userId);
+// 		expect(updated.is_active).toBe(false);
+// 	});
+
+// 	it('should delete a leaderboard entry', async () => {
+// 		await createLeaderboardEntry(userId, 10);
+// 		await deleteLeaderboardEntry(userId);
+
+// 		const entry = await getLeaderboardEntryByUserId(userId);
+// 		expect(entry).toBeNull();
+// 	});
+// });
