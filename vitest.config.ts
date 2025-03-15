@@ -21,8 +21,11 @@ export default defineConfig({
     },
     hookTimeout: 30000, //30s
     testTimeout: 30000, //30s
-    suite: {
-      allowEmpty: true
+    setupFiles: ['./tests/setup.ts'],
+    isolate: false,
+    sequence: {
+      shuffle: false,
+      concurrent: false,
     },
   },
   envDir: './', 

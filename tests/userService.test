@@ -1,0 +1,93 @@
+// import { beforeAll, afterAll, beforeEach, describe, expect, it } from 'vitest';
+// import {
+// 	createUser,
+// 	getUserFromGitHubId,
+// 	getUserByUsername,
+// 	getUserByEmail,
+// 	updateUser,
+// 	deleteUser
+// } from '$lib/server/services/userService';
+// import { deleteLeaderboardEntry } from '$lib/server/services/leaderboardService';
+// import { db } from '$lib/server/db';
+// import { sql } from 'drizzle-orm';
+// import { setupDb, teardownDb, testDb } from './db.setup';
+
+
+// describe('User Service', () => {
+//     let requestId: string = crypto.randomUUID(); // ensure unique PK
+//     let userId: string = crypto.randomUUID(); // ensure unique PK
+//     let githubId: number = Math.floor(Math.random() * 1_000_000_000); // ensure unique PK
+    
+// 	beforeAll(async () => {
+// 		await setupDb();
+// 	});
+
+// 	beforeEach(async () => {
+// 		// Clean the tables before each test
+// 		await db.execute(sql`
+//       TRUNCATE TABLE "user", "leaderboard" RESTART IDENTITY CASCADE;
+//     `);
+// 	});
+
+// 	afterAll(async () => {
+// 		await teardownDb();
+// 	});
+
+// 	it('should create a user and add them to leaderboard', async () => {
+// 		const user = await createUser(12345, 'test@example.com', 'testuser', 'https://avatar.url');
+
+// 		expect(user).toBeDefined();
+// 		expect(user.githubId).toBe(12345);
+// 		expect(user.username).toBe('testuser');
+// 		expect(user.email).toBe('test@example.com');
+// 		expect(user.avatar).toBe('https://avatar.url');
+// 	});
+
+// 	it('should get user by GitHub ID', async () => {
+// 		const user = await createUser(11111, null, 'ghuser', 'https://avatar.url');
+// 		const found = await getUserFromGitHubId(11111);
+
+// 		expect(found).not.toBeNull();
+// 		expect(found?.id).toBe(user.id);
+// 	});
+
+// 	it('should get user by username', async () => {
+// 		const user = await createUser(22222, null, 'username123', 'https://avatar.url');
+// 		const found = await getUserByUsername('username123');
+
+// 		expect(found).not.toBeNull();
+// 		expect(found?.id).toBe(user.id);
+// 	});
+
+// 	it('should get user by email', async () => {
+// 		const user = await createUser(33333, 'user@email.com', 'emailuser', 'https://avatar.url');
+// 		const found = await getUserByEmail('user@email.com');
+
+// 		expect(found).not.toBeNull();
+// 		expect(found?.id).toBe(user.id);
+// 	});
+
+// 	it('should update user fields', async () => {
+// 		const user = await createUser(44444, 'old@email.com', 'olduser', 'https://avatar.old');
+// 		const updated = await updateUser(user.id, {
+// 			email: 'new@email.com',
+// 			avatar: 'https://avatar.new'
+// 		});
+
+// 		expect(updated?.email).toBe('new@email.com');
+// 		expect(updated?.avatar).toBe('https://avatar.new');
+// 	});
+
+// 	it('should delete user by ID', async () => {
+//         const user = await createUser(55555, null, 'deluser', 'https://avatar.url');
+    
+//         // Clean up leaderboard entry using service
+//         await deleteLeaderboardEntry(user.id);
+    
+//         await deleteUser(user.id);
+    
+//         const result = await getUserFromGitHubId(55555);
+//         expect(result).toBeNull();
+//     });
+    
+// });

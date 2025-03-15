@@ -1,5 +1,5 @@
 import { generateSessionToken, createSession, setSessionTokenCookie } from '$lib/server/auth';
-import { getUserFromGitHubId, createUser } from '$lib/server/user';
+import { getUserFromGitHubId, createUser } from '$lib/server/services/userService';
 import { github } from '$lib/server/auth';
 
 import type { RequestEvent } from '@sveltejs/kit';

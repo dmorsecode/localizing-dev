@@ -1,0 +1,149 @@
+// import { beforeAll, afterAll, beforeEach, describe, expect, it } from 'vitest';
+// import {
+// 	createSubmission,
+// 	getSubmissionById,
+// 	getSubmissionsByRequestId,
+// 	getSubmissionsByTranslatorId,
+// 	updateSubmission,
+// 	deleteSubmission
+// } from '$lib/server/services/submissionService';
+
+// import { db } from '$lib/server/db';
+// import { sql } from 'drizzle-orm';
+// import * as schema from '$lib/server/db/schema';
+// import { setupDb, teardownDb, testDb } from './db.setup';
+
+
+// describe('Submission Service', () => {3
+//     let requestId: string = crypto.randomUUID(); // ensure unique PK
+// 	let userId: string = crypto.randomUUID(); // ensure unique PK
+//     let translatorId: string = crypto.randomUUID(); // ensure unique PK
+// 	let githubId: number = Math.floor(Math.random() * 1_000_000_000); // ensure unique PK
+
+// 	beforeAll(async () => {
+// 		await setupDb();
+// 	});
+
+// 	beforeEach(async () => {
+// 		// Clean the tables before each test
+// 		await db.execute(sql`
+//       TRUNCATE TABLE "submission", "requests", "user" RESTART IDENTITY CASCADE;
+//     `);
+
+// 		// Insert dummy translator and requestor users
+// 		await db.insert(schema.user).values([
+// 			{
+// 				id: translatorId,
+// 				githubId: githubId,
+// 				username: 'translator',
+// 				avatar: 'https://avatar.example.com'
+// 			},
+// 			{
+// 				id: userId,
+// 				githubId: 2002,
+// 				username: 'requestor',
+// 				avatar: 'https://avatar.example.com'
+// 			}
+// 		]);
+
+// 		// Insert dummy request
+// 		await db.insert(schema.requests).values({
+// 			r_id: requestId,
+// 			requestor_id: userId,
+// 			repo_url: 'https://github.com/example/repo',
+// 			current_language: 'typescript'
+// 		});
+// 	});
+
+// 	afterAll(async () => {
+// 		await teardownDb();
+// 	});
+
+// 	it('should create a submission', async () => {
+// 		const [submission] = await createSubmission({
+// 			request_id: requestId,
+// 			translator_id: translatorId,
+// 			pull_url: 'https://github.com/example/repo/pull/1'
+// 		});
+
+// 		expect(submission.request_id).toBe(requestId);
+// 		expect(submission.translator_id).toBe(translatorId);
+// 		expect(submission.pull_url).toBe('https://github.com/example/repo/pull/1');
+// 		expect(submission.status).toBe('on review');
+// 	});
+
+// 	it('should get submission by ID', async () => {
+// 		const [created] = await createSubmission({
+// 			request_id: requestId,
+// 			translator_id: translatorId,
+// 			pull_url: 'https://github.com/example/repo/pull/2'
+// 		});
+
+// 		const result = await getSubmissionById(created.s_id);
+// 		expect(result?.s_id).toBe(created.s_id);
+// 		expect(result?.pull_url).toBe('https://github.com/example/repo/pull/2');
+// 	});
+
+// 	it('should get all submissions for a request', async () => {
+// 		await createSubmission({
+// 			request_id: requestId,
+// 			translator_id: translatorId,
+// 			pull_url: 'https://github.com/example/repo/pull/1'
+// 		});
+
+// 		await createSubmission({
+// 			request_id: requestId,
+// 			translator_id: translatorId,
+// 			pull_url: 'https://github.com/example/repo/pull/2'
+// 		});
+
+// 		const submissions = await getSubmissionsByRequestId(requestId);
+// 		expect(submissions).toHaveLength(2);
+// 	});
+
+// 	it('should get all submissions by translator', async () => {
+// 		await createSubmission({
+// 			request_id: requestId,
+// 			translator_id: translatorId,
+// 			pull_url: 'https://github.com/example/repo/pull/1'
+// 		});
+
+// 		await createSubmission({
+// 			request_id: requestId,
+// 			translator_id: translatorId,
+// 			pull_url: 'https://github.com/example/repo/pull/2'
+// 		});
+
+// 		const submissions = await getSubmissionsByTranslatorId(translatorId);
+// 		expect(submissions).toHaveLength(2);
+// 	});
+
+// 	it('should update a submission', async () => {
+// 		const [created] = await createSubmission({
+// 			request_id: requestId,
+// 			translator_id: translatorId,
+// 			pull_url: 'https://github.com/example/repo/pull/1',
+// 			status: 'on review'
+// 		});
+
+// 		const [updated] = await updateSubmission(created.s_id, {
+// 			status: 'approved',
+// 			pull_url: 'https://github.com/example/repo/pull/updated'
+// 		});
+
+// 		expect(updated.status).toBe('approved');
+// 		expect(updated.pull_url).toBe('https://github.com/example/repo/pull/updated');
+// 	});
+
+// 	it('should delete a submission', async () => {
+// 		const [created] = await createSubmission({
+// 			request_id: requestId,
+// 			translator_id: translatorId,
+// 			pull_url: 'https://github.com/example/repo/pull/1'
+// 		});
+
+// 		await deleteSubmission(created.s_id);
+// 		const result = await getSubmissionById(created.s_id);
+// 		expect(result).toBeNull();
+// 	});
+// });
