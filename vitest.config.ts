@@ -21,7 +21,6 @@ export default defineConfig({
     },
     hookTimeout: 30000, //30s
     testTimeout: 30000, //30s
-    setupFiles: ['./tests/setup.ts'],
     isolate: false,
     sequence: {
       shuffle: false,
