@@ -25,6 +25,11 @@ export const createRequest = async ({
 		.returning();
 };
 
+// Get all requests
+export const getAllRequests = async () => {
+	return await db.select().from(schema.requests);
+};
+
 //Get Request By Id
 export const getRequestById = async (r_id: string) => {
 	return await db.select().from(schema.requests).where(eq(schema.requests.r_id, r_id));
