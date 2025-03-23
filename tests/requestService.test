@@ -58,7 +58,7 @@
 // 		const [request] = await createRequest({
 // 			requestor_id: userId,
 // 			repo_url: 'https://github.com/example/repo',
-// 			current_language: 'python'
+// 			current_language: 'English'
 // 		});
 
 // 		const result = await getRequestById(request.r_id);
