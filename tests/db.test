@@ -179,7 +179,7 @@
 //       const [request] = await testDb.insert(schema.requests).values({
 //         requestor_id: user.id,
 //         repo_url: 'https://github.com/test/repo2',
-//         current_language: 'python'
+//         current_language: 'English'
 //       }).returning();
 
 //       // Create submission
