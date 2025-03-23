@@ -1,10 +1,25 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { env } from '$env/dynamic/private';
+import { dev } from '$app/environment';
 
-if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
-const client = postgres(env.DATABASE_URL);
-export const db = drizzle(client);
+let db;
+
+if (dev) {
+  // In development, create a mock database object
+  db = {
+    execute: async () => {},
+    query: async () => [],
+    transaction: async (callback) => callback(db),
+    // Add other necessary mock methods as needed
+  };
+} else {
+  if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
+  const client = postgres(env.DATABASE_URL);
+  db = drizzle(client);
+}
+
+export { db };
 
 await db.execute(`
 
