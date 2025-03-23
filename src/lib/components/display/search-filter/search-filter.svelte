@@ -18,7 +18,6 @@
 		{ value: '5', label: 'Tag 5' }];
 
 	function addTag(tag: Tag) {
-		console.log(tag);
 		if (!selectedTags.find((t) => t.label === tag.label)) {
 			selectedTags = [...selectedTags, tag];
 		}
