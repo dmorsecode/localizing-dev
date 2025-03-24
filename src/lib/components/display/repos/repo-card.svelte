@@ -24,8 +24,6 @@
 		license: {
 			name: string;
 		};
-		requestedLanguages: [],
-		tags: []
 	}
 
 	let repoData : RepoData = {
@@ -39,8 +37,6 @@
 		license: {
 			name: ""
 		},
-		requestedLanguages: [],
-		tags: []
 	};
 	(async () => {
 		// our repo.repo_url is the full url. we want everything after the .com
@@ -84,7 +80,7 @@
 						</Table.Cell>
 						<Table.Cell class="px-0">
 							{#each repo.requested_languages as lang}
-								<p>{LANGS.find((l) => l.code === lang.language)?.name}</p>
+								<p>{LANGS.find((l) => l.code === lang)?.name}</p>
 							{/each}
 						</Table.Cell>
 					</Table.Row>

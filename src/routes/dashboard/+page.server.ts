@@ -4,26 +4,13 @@ import { superValidate } from "sveltekit-superforms";
 import { formSchema } from "$lib/components/forms/repo-submission-form/schema";
 import { zod } from "sveltekit-superforms/adapters";
 import { createRequest, getRequestsByUser } from '$lib/server/services/requestService';
-import { addLanguageToRequest, getLanguagesByRequestId } from '$lib/server/services/languageService';
-import { addTagsToRequest, getTagsByRequestId } from '$lib/server/services/tagService';
-import * as schema from '$lib/server/db/schema';
-
-interface FullRequest extends schema.requests {
-	requested_languages: schema.languages[];
-	tags: schema.tags[];
-}
+import { addLanguageToRequest } from '$lib/server/services/languageService';
+import { addTagsToRequest } from '$lib/server/services/tagService';
 
 export async function load(event: RequestEvent) {
 	if (event.locals.user === null) return;
 	const repos = await fetch(`https://api.github.com/users/${event.locals.user.username}/repos`);
-	const requests : FullRequest[] = await getRequestsByUser(event.locals.user.id);
-	for (let i = 0; i < requests.length; i++) {
-		const request = requests[i];
-		const languages = await getLanguagesByRequestId(request.r_id);
-		const tags = await getTagsByRequestId(request.r_id);
-		request.requested_languages = languages;
-		request.tags = tags;
-	}
+	const requests = await getRequestsByUser(event.locals.user.id);
 
 	return {
 		form: await superValidate(zod(formSchema)),
@@ -51,7 +38,6 @@ async function addRepo(event: RequestEvent) {
 		});
 	}
 
-	console.log(form);
 	console.log(event.locals.user.id);
 	const requestObject = {
 		requestor_id: event.locals.user.id,
@@ -60,7 +46,6 @@ async function addRepo(event: RequestEvent) {
 		status: 'open'
 	}
 	const reqResponse = await createRequest(requestObject);
-	console.log(reqResponse);
 	for (let i = 0; i < form.data.requestedLangs.length; i++) {
 		await addLanguageToRequest(reqResponse[0].r_id, form.data.requestedLangs[i]);
 	}
