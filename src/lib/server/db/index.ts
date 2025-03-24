@@ -6,6 +6,17 @@ if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
 const client = postgres(env.DATABASE_URL);
 export const db = drizzle(client);
 
+//DROP TABLE IF EXISTS "notifications" CASCADE;
+//DROP TABLE IF EXISTS "reviews" CASCADE;
+//DROP TABLE IF EXISTS "submission" CASCADE;
+//DROP TABLE IF EXISTS "languages" CASCADE;
+//DROP TABLE IF EXISTS "tags" CASCADE;
+//DROP TABLE IF EXISTS "current_languages" CASCADE,
+//DROP TABLE IF EXISTS "requests" CASCADE;
+//DROP TABLE IF EXISTS "leaderboard" CASCADE;
+//DROP TABLE IF EXISTS "session" CASCADE;
+//DROP TABLE IF EXISTS "user" CASCADE;
+
 await db.execute(`
 
 DROP TABLE IF EXISTS "notifications" CASCADE;
@@ -13,6 +24,7 @@ DROP TABLE IF EXISTS "reviews" CASCADE;
 DROP TABLE IF EXISTS "submission" CASCADE;
 DROP TABLE IF EXISTS "languages" CASCADE;
 DROP TABLE IF EXISTS "tags" CASCADE;
+DROP TABLE IF EXISTS "current_languages" CASCADE;
 DROP TABLE IF EXISTS "requests" CASCADE;
 DROP TABLE IF EXISTS "leaderboard" CASCADE;
 DROP TABLE IF EXISTS "session" CASCADE;
@@ -43,14 +55,17 @@ CREATE TABLE IF NOT EXISTS "requests" (
 	r_id text PRIMARY KEY,
 	requestor_id text NOT NULL REFERENCES "user" (id),
 	repo_URL text NOT NULL,
-	current_language text NOT NULL,
 	status text DEFAULT 'open',
-	tag01 text,
-	tag02 text,
+	description text NOT NULL,
 	created_at timestamp DEFAULT now(),
 	expires_at timestamp DEFAULT (now() + '60 days'::interval)
 );
 CREATE TABLE IF NOT EXISTS languages (
+	request_id TEXT NOT NULL REFERENCES "requests" (r_id) ON DELETE CASCADE,
+	language TEXT NOT NULL,
+	PRIMARY KEY (request_id, language)
+);
+CREATE TABLE IF NOT EXISTS current_languages (
 	request_id TEXT NOT NULL REFERENCES "requests" (r_id) ON DELETE CASCADE,
 	language TEXT NOT NULL,
 	PRIMARY KEY (request_id, language)
@@ -63,8 +78,8 @@ CREATE TABLE IF NOT EXISTS tags (
 CREATE TABLE IF NOT EXISTS "submission" (
 	s_id text PRIMARY KEY,
 	request_id text NOT NULL REFERENCES "requests" (r_id),
-	translator_id text NOT NULL REFERENCES "user" (id),
-	pull_url text,
+	T_ID text NOT NULL REFERENCES "user" (id),
+	pull_URL text,
 	submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 	status text DEFAULT 'on review'::text
 );
@@ -84,4 +99,12 @@ CREATE TABLE IF NOT EXISTS "notifications" (
 	is_read INTEGER DEFAULT 0,
 	created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+CREATE INDEX IF NOT EXISTS idx_current_languages_language ON current_languages(language);
+CREATE INDEX IF NOT EXISTS idx_languages_language ON languages(language);
+CREATE INDEX IF NOT EXISTS idx_tags_tag ON tags(tag);
+CREATE INDEX IF NOT EXISTS idx_requests_status ON requests(status);
+CREATE INDEX IF NOT EXISTS idx_submission_status ON submission(status);
+CREATE INDEX IF NOT EXISTS idx_leaderboard_score ON leaderboard(l_score DESC);
+CREATE INDEX IF NOT EXISTS idx_user_username ON "user"(username);
+
 `);
