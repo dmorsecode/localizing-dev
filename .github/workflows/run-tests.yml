@@ -3,7 +3,9 @@
 
 name: Node.js CI
 env:
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  # DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID}}
+  GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET}}
 
 on:
   workflow_dispatch:
@@ -14,7 +16,6 @@ on:
     branches:
     - main
     - develop
-
 jobs:
   vitest:
     runs-on: ubuntu-latest
@@ -27,6 +28,8 @@ jobs:
     - run: npm ci
     - name: Run Vitest
       run: npm run test:unit run
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
   playwright:
     runs-on: ubuntu-latest
     steps:
@@ -40,3 +43,5 @@ jobs:
       run: npx playwright install --with-deps
     - name: Run Playwright Tests
       run: npx playwright test
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}

@@ -1,0 +1,114 @@
+// import { beforeAll, afterAll, beforeEach, describe, expect, it } from 'vitest';
+// import {
+// 	createRequest,
+// 	getRequestById,
+// 	getRequestsByUser,
+// 	updateRequest,
+// 	deleteRequest
+// } from '$lib/server/services/requestService';
+
+// import { db } from '$lib/server/db';
+// import { sql } from 'drizzle-orm';
+// import * as schema from '$lib/server/db/schema';
+// import { setupDb, teardownDb, testDb } from './db.setup';
+
+
+// describe('Request Service', () => {
+//     let requestId: string = crypto.randomUUID(); // ensure unique PK
+//     let userId: string = crypto.randomUUID(); // ensure unique PK
+//     let githubId: number = Math.floor(Math.random() * 1_000_000_000); // ensure unique PK
+
+// 	beforeAll(async () => {
+// 		await setupDb();
+// 	});
+
+// 	beforeEach(async () => {
+// 		// Clean the tables before each test
+// 		await db.execute(sql`
+//       TRUNCATE TABLE "requests", "user" RESTART IDENTITY CASCADE;
+//     `);
+
+// 		// Insert a dummy user for foreign key
+// 		await db.insert(schema.user).values({
+// 			id: userId,
+// 			githubId: githubId,
+// 			username: 'requestuser',
+// 			avatar: 'https://avatar.example.com'
+// 		});
+// 	});
+
+// 	afterAll(async () => {
+// 		await teardownDb();
+// 	});
+
+// 	it('should create a new request', async () => {
+// 		const [request] = await createRequest({
+// 			requestor_id: userId,
+// 			repo_url: 'https://github.com/example/repo',
+// 			current_language: 'typescript'
+// 		});
+
+// 		expect(request.requestor_id).toBe(userId);
+// 		expect(request.repo_url).toBe('https://github.com/example/repo');
+// 		expect(request.current_language).toBe('typescript');
+// 		expect(request.status).toBe('open'); // default
+// 	});
+
+// 	it('should get request by ID', async () => {
+// 		const [request] = await createRequest({
+// 			requestor_id: userId,
+// 			repo_url: 'https://github.com/example/repo',
+// 			current_language: 'English'
+// 		});
+
+// 		const result = await getRequestById(request.r_id);
+// 		expect(result).toHaveLength(1);
+// 		expect(result[0].r_id).toBe(request.r_id);
+// 	});
+
+// 	it('should get all requests by user ID', async () => {
+// 		await createRequest({
+// 			requestor_id: userId,
+// 			repo_url: 'https://github.com/repo/one',
+// 			current_language: 'go'
+// 		});
+
+// 		await createRequest({
+// 			requestor_id: userId,
+// 			repo_url: 'https://github.com/repo/two',
+// 			current_language: 'rust'
+// 		});
+
+// 		const requests = await getRequestsByUser(userId);
+// 		expect(requests).toHaveLength(2);
+// 	});
+
+// 	it('should update a request', async () => {
+// 		const [request] = await createRequest({
+// 			requestor_id: userId,
+// 			repo_url: 'https://github.com/repo/update-me',
+// 			current_language: 'java'
+// 		});
+
+// 		const [updated] = await updateRequest(request.r_id, {
+// 			status: 'closed',
+// 			current_language: 'kotlin'
+// 		});
+
+// 		expect(updated.status).toBe('closed');
+// 		expect(updated.current_language).toBe('kotlin');
+// 	});
+
+// 	it('should delete a request', async () => {
+// 		const [request] = await createRequest({
+// 			requestor_id: userId,
+// 			repo_url: 'https://github.com/repo/delete-me',
+// 			current_language: 'php'
+// 		});
+
+// 		await deleteRequest(request.r_id);
+
+// 		const result = await getRequestById(request.r_id);
+// 		expect(result).toHaveLength(0);
+// 	});
+// });

@@ -1,0 +1,113 @@
+// import { beforeAll, afterAll, beforeEach, describe, expect, it } from 'vitest';
+// import {
+// 	addTagToRequest,
+// 	addTagsToRequest,
+// 	getTagsByRequestId,
+// 	deleteTagFromRequest,
+// 	deleteAllTagsFromRequest,
+// 	deleteTagsFromRequest
+// } from '$lib/server/services/tagService';
+
+// import { db } from '$lib/server/db';
+// import { sql } from 'drizzle-orm';
+// import * as schema from '$lib/server/db/schema';
+// import { setupDb, teardownDb, testDb } from './db.setup';
+
+
+// describe('Tag Service', () => {
+// 	let requestId: string = crypto.randomUUID(); // ensure unique PK
+//     let userId: string = crypto.randomUUID(); // ensure unique PK
+//     let githubId: number = Math.floor(Math.random() * 1_000_000_000); // ensure unique PK
+    
+//     beforeAll(async () => {
+// 		await setupDb();
+// 	});
+
+// 	beforeEach(async () => {
+//         // Clean the tables before each test
+//         await db.execute(sql`
+//           TRUNCATE TABLE "tags", "requests", "user" RESTART IDENTITY CASCADE;
+//         `);
+      
+//         // Now safe to insert again
+//         await db.insert(schema.user).values({
+//           id: userId,
+//           githubId: githubId,
+//           username: 'testuser',
+//           avatar: 'https://example.com/avatar.png'
+//         });
+      
+//         await db.insert(schema.requests).values({
+//           r_id: requestId,
+//           requestor_id: userId,
+//           repo_url: 'https://github.com/example/repo',
+//           current_language: 'typescript'
+//         });
+//       });
+      
+
+// 	afterAll(async () => {
+// 		await teardownDb();
+// 	});
+
+// 	it('should add a single tag to a request', async () => {
+// 		await addTagToRequest(requestId, 'frontend');
+// 		const tags = await getTagsByRequestId(requestId);
+// 		expect(tags).toHaveLength(1);
+// 		expect(tags[0].tag).toBe('frontend');
+// 	});
+
+// 	it('should add multiple tags to a request', async () => {
+// 		await addTagsToRequest(requestId, ['frontend', 'backend', 'devops']);
+// 		const tags = await getTagsByRequestId(requestId);
+// 		expect(tags).toHaveLength(3);
+// 		const tagNames = tags.map((t) => t.tag);
+// 		expect(tagNames).toContain('frontend');
+// 		expect(tagNames).toContain('backend');
+// 		expect(tagNames).toContain('devops');
+// 	});
+
+// 	it('should return empty array when adding no tags (bulk insert)', async () => {
+// 		const result = await addTagsToRequest(requestId, []);
+// 		expect(result).toEqual([]);
+// 	});
+
+// 	it('should get all tags for a request', async () => {
+// 		await addTagsToRequest(requestId, ['typescript', 'react']);
+// 		const tags = await getTagsByRequestId(requestId);
+// 		expect(tags).toHaveLength(2);
+// 	});
+
+// 	it('should delete a specific tag from a request', async () => {
+// 		await addTagsToRequest(requestId, ['ts', 'js']);
+// 		await deleteTagFromRequest(requestId, 'ts');
+// 		const tags = await getTagsByRequestId(requestId);
+// 		expect(tags).toHaveLength(1);
+// 		expect(tags[0].tag).toBe('js');
+// 	});
+
+// 	it('should delete all tags for a request', async () => {
+// 		await addTagsToRequest(requestId, ['ts', 'js', 'css']);
+// 		await deleteAllTagsFromRequest(requestId);
+// 		const tags = await getTagsByRequestId(requestId);
+// 		expect(tags).toHaveLength(0);
+// 	});
+
+// 	it('should delete multiple specific tags from a request', async () => {
+// 		await addTagsToRequest(requestId, ['api', 'auth', 'ui', 'ux']);
+// 		await deleteTagsFromRequest(requestId, ['api', 'ux']);
+
+// 		const tags = await getTagsByRequestId(requestId);
+// 		expect(tags).toHaveLength(2);
+// 		const tagList = tags.map((t) => t.tag);
+// 		expect(tagList).toContain('auth');
+// 		expect(tagList).toContain('ui');
+// 	});
+
+// 	it('should do nothing if deleting tags with empty list', async () => {
+// 		await addTagsToRequest(requestId, ['ts', 'graphql']);
+// 		await deleteTagsFromRequest(requestId, []);
+// 		const tags = await getTagsByRequestId(requestId);
+// 		expect(tags).toHaveLength(2);
+// 	});
+// });

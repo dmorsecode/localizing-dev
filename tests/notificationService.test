@@ -1,0 +1,136 @@
+// import { beforeAll, afterAll, beforeEach, describe, expect, it } from 'vitest';
+// import {
+// 	createNotification,
+// 	getNotificationById,
+// 	getNotificationsByUserId,
+// 	getUnreadNotificationsByUserId,
+// 	markNotificationAsRead,
+// 	markAllNotificationsAsRead,
+// 	deleteNotification,
+// 	deleteAllNotificationsByUserId
+// } from '$lib/server/services/notificationService';
+
+// import { db } from '$lib/server/db';
+// import { sql } from 'drizzle-orm';
+// import * as schema from '$lib/server/db/schema';
+// import { setupDb, teardownDb, testDb } from './db.setup';
+
+
+// describe('Notification Service', () => {
+//     let requestId: string = crypto.randomUUID(); // ensure unique PK
+//     let userId: string = crypto.randomUUID(); // ensure unique PK
+//     let githubId: number = Math.floor(Math.random() * 1_000_000_000); // ensure unique PK
+
+// 	beforeAll(async () => {
+// 		await setupDb();
+// 	});
+
+// 	beforeEach(async () => {
+// 		// Clean the tables before each test
+// 		await db.execute(sql`
+//       TRUNCATE TABLE "notifications", "user" RESTART IDENTITY CASCADE;
+//     `);
+
+// 		// Insert a dummy user for foreign key
+// 		await db.insert(schema.user).values({
+// 			id: userId,
+// 			githubId: githubId,
+// 			username: 'notiuser',
+// 			avatar: 'https://avatar.example.com'
+// 		});
+// 	});
+
+// 	afterAll(async () => {
+// 		await teardownDb();
+// 	});
+
+// 	it('should create a new notification', async () => {
+// 		const [notification] = await createNotification({
+// 			user_id: userId,
+// 			message: 'You have a new message',
+// 			type: 'info'
+// 		});
+
+// 		expect(notification.user_id).toBe(userId);
+// 		expect(notification.message).toBe('You have a new message');
+// 		expect(notification.type).toBe('info');
+// 		expect(notification.is_read).toBe(0);
+// 	});
+
+// 	it('should get a notification by ID', async () => {
+// 		const [created] = await createNotification({
+// 			user_id: userId,
+// 			message: 'Check this out'
+// 		});
+
+// 		const found = await getNotificationById(created.n_id);
+// 		expect(found?.n_id).toBe(created.n_id);
+// 		expect(found?.message).toBe('Check this out');
+// 	});
+
+// 	it('should get all notifications for a user', async () => {
+// 		await createNotification({ user_id: userId, message: 'Notif 1' });
+// 		await createNotification({ user_id: userId, message: 'Notif 2' });
+
+// 		const notifications = await getNotificationsByUserId(userId);
+// 		expect(notifications).toHaveLength(2);
+// 	});
+
+// 	it('should get unread notifications only', async () => {
+// 		const [n1] = await createNotification({ user_id: userId, message: 'Unread' });
+// 		const [n2] = await createNotification({ user_id: userId, message: 'Also unread' });
+
+// 		await markNotificationAsRead(n1.n_id);
+
+// 		const unread = await getUnreadNotificationsByUserId(userId);
+// 		expect(unread).toHaveLength(1);
+// 		expect(unread[0].n_id).toBe(n2.n_id);
+// 	});
+
+// 	it('should mark a notification as read', async () => {
+// 		// Insert the user that the notification will reference
+// 		await db.insert(schema.user).values({
+// 			id: 'notified-user-id',
+// 			githubId: 9999,
+// 			username: 'notifieduser',
+// 			avatar: 'https://example.com/avatar.png'
+// 		});
+
+// 		// Create the notification using the service
+// 		const [notification] = await createNotification({
+// 			user_id: 'notified-user-id',
+// 			message: 'Hello, this is a test notification',
+// 			type: 'info'
+// 		});
+
+// 		// Mark as read
+// 		const [updated] = await markNotificationAsRead(notification.n_id);
+// 		expect(updated.is_read).toBe(1);
+// 	});
+
+// 	it('should mark all notifications as read for a user', async () => {
+// 		await createNotification({ user_id: userId, message: 'One' });
+// 		await createNotification({ user_id: userId, message: 'Two' });
+
+// 		await markAllNotificationsAsRead(userId);
+// 		const all = await getNotificationsByUserId(userId);
+// 		all.forEach((n) => expect(n.is_read).toBe(1));
+// 	});
+
+// 	it('should delete a notification by ID', async () => {
+// 		const [notif] = await createNotification({ user_id: userId, message: 'Delete me' });
+// 		await deleteNotification(notif.n_id);
+
+// 		const result = await getNotificationById(notif.n_id);
+// 		expect(result).toBeNull();
+// 	});
+
+// 	it('should delete all notifications for a user', async () => {
+// 		await createNotification({ user_id: userId, message: 'One' });
+// 		await createNotification({ user_id: userId, message: 'Two' });
+
+// 		await deleteAllNotificationsByUserId(userId);
+// 		const all = await getNotificationsByUserId(userId);
+// 		expect(all).toHaveLength(0);
+// 	});
+// });
