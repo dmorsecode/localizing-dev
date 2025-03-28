@@ -40,6 +40,9 @@
 		value: $formData.url
 	} : undefined;
 
+	$: curSelectOpen = false;
+	$: reqSelectOpen = false;
+
 	$: tags = $formData.tags ? $formData.tags : [];
 
 	function addTag(tag: string) {
@@ -84,7 +87,7 @@
 	<Form.Field {form} name="currentLangs">
 		<Form.Control let:attrs>
 			<Form.Label class="font-semibold">Current Languages</Form.Label>
-			<Select.Root multiple={true} onSelectedChange={(v) => {
+			<Select.Root bind:open={curSelectOpen} multiple={true} onSelectedChange={(v) => {
 				if (!v) return;
 				$formData.currentLangs = v.map((value) => {
 					if (typeof value.value === 'string') {
@@ -92,6 +95,7 @@
 					}
 					return '';
 				});
+				curSelectOpen = false;
 			}}>
 				<Select.Trigger {...attrs}>
 					<Select.Value placeholder="Select a language" />
@@ -111,7 +115,7 @@
 	<Form.Field {form} name="requestedLangs">
 		<Form.Control let:attrs>
 			<Form.Label class="font-semibold">Requested Languages</Form.Label>
-			<Select.Root multiple={true} onSelectedChange={(v) => {
+			<Select.Root bind:open={reqSelectOpen} multiple={true} onSelectedChange={(v) => {
 				if (!v) return;
 				$formData.requestedLangs = v.map((value) => {
 					if (typeof value.value === 'string') {
@@ -119,6 +123,7 @@
 					}
 					return '';
 				});
+				reqSelectOpen = false;
 			}}>
 				<Select.Trigger {...attrs}>
 					<Select.Value placeholder="Select a language" />

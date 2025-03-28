@@ -5,9 +5,9 @@ import { encodeBase64url, encodeHexLowerCase } from '@oslojs/encoding';
 import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
 import { GitHub } from "arctic";
-import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from "$env/static/private";
+import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, CALLBACK_URL } from "$env/static/private";
 
-export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, "http://localhost:5173/login/github/callback"); // TODO: Grab url from .env variable for dev vs prod redirects
+export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, CALLBACK_URL);
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 

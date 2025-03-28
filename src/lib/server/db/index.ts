@@ -18,7 +18,6 @@ export const db = drizzle(client);
 //DROP TABLE IF EXISTS "user" CASCADE;
 
 await db.execute(`
-
 CREATE TABLE IF NOT EXISTS "user" (
 	id text PRIMARY KEY,
 	"githubId" integer NOT NULL UNIQUE,
