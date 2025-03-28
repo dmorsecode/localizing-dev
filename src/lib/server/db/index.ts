@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS "requests" (
 	requestor_id text NOT NULL REFERENCES "user" (id),
 	repo_URL text NOT NULL,
 	status text DEFAULT 'open',
-	description text NOT NULL,
+	description text,
 	created_at timestamp DEFAULT now(),
 	expires_at timestamp DEFAULT (now() + '60 days'::interval)
 );
