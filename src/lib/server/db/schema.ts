@@ -31,7 +31,7 @@ export const requests = pgTable('requests', {
 	requestor_id: text('requestor_id').notNull().references(() => user.id),
 	repo_url: text('repo_url').notNull(),
 	status: text('status').default('open'),
-	description: text('description').notNull(),
+	description: text('description'),
 	created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow(),
 	expires_at: timestamp('expired_at', { withTimezone: true})
 });
