@@ -14,7 +14,7 @@ export async function load(event: RequestEvent) {
 
 	return {
 		form: await superValidate(zod(formSchema)),
-		requests: requests,
+		requests: await requests,
 		repos: await repos.json()
 	};
 }
