@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { toast } from "svelte-sonner";
-	import { Button } from "$lib/components/ui/button";
+	import type { PageProps } from './$types';
+	import { toast } from 'svelte-sonner';
+	import { Button } from '$lib/components/ui/button';
 
-	export let data;
-  	const user = data.user;
+	let { data }: PageProps = $props();
 </script>
 
 <h1>Welcome to SvelteKit</h1>
@@ -11,11 +11,17 @@
 
 <Button class="border m-2" on:click={() => toast("Hello world!")}>Show test toast</Button>
 
-{#if user}
-  <h1>Welcome, {user.username}!</h1>
-  <p><strong>Email:</strong> {user.email}</p>
-  <p><strong>Points:</strong> {user.points}</p>
-  <img src={user.avatar} alt="Avatar" width="100" />
-{:else}
-  <p>User not found.</p>
-{/if}
+{#await data.user}
+	Loading...
+{:then user}
+	{#if user === null || user === undefined}
+		<p>No user found</p>
+	{:else}
+		<h1>Welcome, {user?.username}!</h1>
+		<p><strong>Email:</strong> {user?.email}</p>
+		<p><strong>Points:</strong> {user?.points}</p>
+		<img src={user?.avatar} alt="Avatar" width="100" />
+	{/if}
+{:catch error}
+	<p style="color: red">{error.message}</p>
+{/await}
