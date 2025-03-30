@@ -6,21 +6,21 @@ import * as schema from '$lib/server/db/schema';
 export const createRequest = async ({
 	requestor_id,
 	repo_url,
-	current_language,
-	status
+	status,
+	description
 }: {
 	requestor_id: string;
 	repo_url: string;
-	current_language: string;
 	status?: string;
+	description?: string | null;
 }) => {
 	return await db
 		.insert(schema.requests)
 		.values({
 			requestor_id,
 			repo_url,
-			current_language,
-			status: status ?? 'open'
+			status: status ?? 'open',
+			description: description ?? null,
 		})
 		.returning();
 };
@@ -34,7 +34,11 @@ export const getAllRequests = async () => {
 			repo_url: schema.requests.repo_url,
 			requestor_id: schema.requests.requestor_id,
 			status: schema.requests.status,
-			current_language: schema.requests.current_language,
+			description: schema.requests.description,
+			current_languages: {
+				request_id: schema.cur_languages.request_id,
+				language: schema.cur_languages.language
+			},
 			requested_languages: {
 				request_id: schema.languages.request_id,
 				language: schema.languages.language
@@ -46,6 +50,7 @@ export const getAllRequests = async () => {
 		})
 		.from(schema.requests)
 		.leftJoin(schema.tags, eq(schema.requests.r_id, schema.tags.request_id))
+		.leftJoin(schema.cur_languages, eq(schema.requests.r_id, schema.cur_languages.request_id))
 		.leftJoin(schema.languages, eq(schema.requests.r_id, schema.languages.request_id))
 
 	//return null if no rows found
@@ -61,8 +66,9 @@ export const getAllRequests = async () => {
 				repo_url: row.repo_url,
 				requestor_id: row.requestor_id,
 				status: row.status ?? 'open',
-				current_language: row.current_language,
+				description: row.description,
 				tags: [],
+				current_languages: [],
 				requested_languages: []
 			};
 		}
@@ -74,6 +80,12 @@ export const getAllRequests = async () => {
 			!return_request[row.r_id].requested_languages.includes(row.requested_languages.language)
 		) {
 			return_request[row.r_id].requested_languages.push(row.requested_languages.language);
+		}
+		if (
+			row.current_languages?.language &&
+			!return_request[row.r_id].current_languages.includes(row.current_languages.language)
+		) {
+			return_request[row.r_id].current_languages.push(row.current_languages.language);
 		}
 	}
 
@@ -89,7 +101,11 @@ export const getRequestById = async (r_id: string) => {
 			repo_url: schema.requests.repo_url,
 			requestor_id: schema.requests.requestor_id,
 			status: schema.requests.status,
-			current_language: schema.requests.current_language,
+			description: schema.requests.description,
+			current_languages: {
+				request_id: schema.cur_languages.request_id,
+				language: schema.cur_languages.language
+			},
 			requested_languages: {
 				request_id: schema.languages.request_id,
 				language: schema.languages.language
@@ -101,6 +117,7 @@ export const getRequestById = async (r_id: string) => {
 		})
 		.from(schema.requests)
 		.leftJoin(schema.tags, eq(schema.requests.r_id, schema.tags.request_id))
+		.leftJoin(schema.cur_languages, eq(schema.requests.r_id, schema.cur_languages.request_id))
 		.leftJoin(schema.languages, eq(schema.requests.r_id, schema.languages.request_id))
 		.where(eq(schema.requests.r_id, r_id));
 
@@ -112,7 +129,8 @@ export const getRequestById = async (r_id: string) => {
 		repo_url: rows[0].repo_url,
 		requestor_id: rows[0].requestor_id,
 		status: rows[0].status,
-		current_language: rows[0].current_language,
+		description: rows[0].description,
+		current_languages: [],
 		requested_languages: [],
 		tags: []
 	};
@@ -121,6 +139,14 @@ export const getRequestById = async (r_id: string) => {
 		...new Set(
 			rows
 				.map((row) => row.requested_languages?.language)
+				.filter((language): language is string => language !== null && language !== undefined)
+		)
+	];
+
+	return_request.current_languages = [
+		...new Set(
+			rows
+				.map((row) => row.current_languages?.language)
 				.filter((language): language is string => language !== null && language !== undefined)
 		)
 	];
@@ -201,7 +227,11 @@ export const getRequestsByUser = async (userId: string) => {
 			repo_url: schema.requests.repo_url,
 			requestor_id: schema.requests.requestor_id,
 			status: schema.requests.status,
-			current_language: schema.requests.current_language,
+			description: schema.requests.description,
+			current_languages: {
+				request_id: schema.cur_languages.request_id,
+				language: schema.cur_languages.language
+			},
 			requested_languages: {
 				request_id: schema.languages.request_id,
 				language: schema.languages.language
@@ -213,6 +243,7 @@ export const getRequestsByUser = async (userId: string) => {
 		})
 		.from(schema.requests)
 		.leftJoin(schema.tags, eq(schema.requests.r_id, schema.tags.request_id))
+		.leftJoin(schema.cur_languages, eq(schema.requests.r_id, schema.cur_languages.request_id))
 		.leftJoin(schema.languages, eq(schema.requests.r_id, schema.languages.request_id))
 		.where(eq(schema.requests.requestor_id, userId));
 
@@ -229,8 +260,9 @@ export const getRequestsByUser = async (userId: string) => {
 					repo_url: row.repo_url,
 					requestor_id: row.requestor_id,
 					status: row.status ?? 'open',
-					current_language: row.current_language,
+					description: row.description,
 					tags: [],
+					current_languages: [],
 					requested_languages: []
 				};
 			}
@@ -242,6 +274,12 @@ export const getRequestsByUser = async (userId: string) => {
 				!return_request[row.r_id].requested_languages.includes(row.requested_languages.language)
 			) {
 				return_request[row.r_id].requested_languages.push(row.requested_languages.language);
+			}
+			if (
+				row.current_languages?.language &&
+				!return_request[row.r_id].current_languages.includes(row.current_languages.language)
+			) {
+				return_request[row.r_id].current_languages.push(row.current_languages.language);
 			}
 		}
 
@@ -272,7 +310,8 @@ type RequestWithLanguageAndTags = {
 	repo_url: string;
 	requestor_id: string;
 	status: string | null;
-	current_language: string;
+	description: string | null;
+	current_languages: string[];
 	requested_languages: string[];
 	tags: string[];
 };

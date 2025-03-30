@@ -30,10 +30,8 @@ export const requests = pgTable('requests', {
 	r_id: text('r_id').primaryKey().$defaultFn(() => crypto.randomUUID()),
 	requestor_id: text('requestor_id').notNull().references(() => user.id),
 	repo_url: text('repo_url').notNull(),
-	current_language: text('current_language').notNull(),
 	status: text('status').default('open'),
-	tag01: text('tag01'),
-	tag02: text('tag02'),
+	description: text('description'),
 	created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow(),
 	expires_at: timestamp('expires_at', { withTimezone: true})
 });
@@ -50,6 +48,13 @@ export const tags = pgTable('tags', {
 	tag: text('tag').notNull(),
 }, (table) => ({
 	pk: primaryKey({ columns: [table.request_id, table.tag]})
+}));
+
+export const cur_languages = pgTable('cur_languages', {
+	request_id: text('request_id').notNull().references(() => requests.r_id),
+	language: text('language').notNull(),
+}, (table) => ({
+	pk: primaryKey({columns: [table.request_id, table.language]})
 }));
 
 export const submission = pgTable('submission', {
@@ -88,3 +93,5 @@ export type Submission = typeof submission.$inferSelect;
 export type Review = typeof reviews.$inferSelect;
 export type Notifications = typeof notifications.$inferSelect;
 export type Languages = typeof languages.$inferSelect;
+export type Tags = typeof tags.$inferSelect;
+export type Cur_Languages = typeof cur_languages.$inferSelect;

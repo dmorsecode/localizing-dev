@@ -43,6 +43,7 @@
 		const apiEndpoint = repo.repo_url.split(".com/")[1];
 		const repoRes = await fetch(`https://api.github.com/repos/${apiEndpoint}`);
 		repoData = await repoRes.json();
+		console.log(repo);
 	})();
 </script>
 
@@ -64,7 +65,7 @@
 			</Card.Header>
 		</a>
 		<Card.Content class="p-3 pt-0 grow">
-			<p class="h-12">{repoData.description ?? "No description available."}</p>
+			<p class="h-12">{repo.description ?? repoData.description ?? "No description available."}</p>
 			<br />
 			<Table.Root class="text-xs">
 				<Table.Header>
@@ -76,7 +77,9 @@
 				<Table.Body>
 					<Table.Row>
 						<Table.Cell class="px-2 align-top">
-							{LANGS.find((lang) => lang.code === repo.current_language)?.name}
+							{#each repo.requested_languages as lang}
+								<p>{LANGS.find((l) => l.code === lang)?.name}</p>
+							{/each}
 						</Table.Cell>
 						<Table.Cell class="px-0">
 							{#each repo.requested_languages as lang}
