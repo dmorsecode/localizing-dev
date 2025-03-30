@@ -3,12 +3,12 @@ import { db } from '$lib/server/db';
 import * as schema from '$lib/server/db/schema';
 
 //Add a language to a request
-export const addLanguageToRequest = async (request_id: string, language: string) => {
+export const addCurrentLanguageToRequest = async (request_id: string, language: string) => {
   return await db.insert(schema.cur_languages).values({ request_id, language });
 };
 
 //Get all languages for a request
-export const getLanguagesByRequestId = async (request_id: string) => {
+export const getCurrentLanguagesByRequestId = async (request_id: string) => {
   return await db
     .select()
     .from(schema.cur_languages)
@@ -16,7 +16,7 @@ export const getLanguagesByRequestId = async (request_id: string) => {
 };
 
 //Delete a specific language from a request
-export const deleteLanguageFromRequest = async (request_id: string, language: string) => {
+export const deleteCurrentLanguageFromRequest = async (request_id: string, language: string) => {
     return await db
       .delete(schema.cur_languages)
       .where(
@@ -28,7 +28,7 @@ export const deleteLanguageFromRequest = async (request_id: string, language: st
   };
 
 //Delete all languages for a request
-export const deleteAllLanguagesFromRequest = async (request_id: string) => {
+export const deleteAllCurrentLanguagesFromRequest = async (request_id: string) => {
   return await db
     .delete(schema.cur_languages)
     .where(eq(schema.cur_languages.request_id, request_id));

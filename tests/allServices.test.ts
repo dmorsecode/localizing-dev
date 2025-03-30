@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, beforeAll, afterAll } from 'vitest';
 import {
-    addLanguageToRequest,
-    getLanguagesByRequestId,
-    deleteLanguageFromRequest,
-    deleteAllLanguagesFromRequest
+    addRequestedLanguageToRequest,
+    getRequestedLanguagesByRequestId,
+    deleteRequestedLanguageFromRequest,
+    deleteAllRequestedLanguagesFromRequest
 } from '$lib/server/services/languageService';
 import { db } from '$lib/server/db';
 import { sql } from 'drizzle-orm';
@@ -57,19 +57,19 @@ describe('Language Service', () => {
 
     it('should add a language to a request', async () => {
         const request = await createRequest();
-        await addLanguageToRequest(request.r_id, 'English');
+        await addRequestedLanguageToRequest(request.r_id, 'English');
 
-        const langs = await getLanguagesByRequestId(request.r_id);
+        const langs = await getRequestedLanguagesByRequestId(request.r_id);
         expect(langs).toHaveLength(1);
         expect(langs[0].language).toBe('English');
     });
 
     it('should get all languages for a request', async () => {
         const request = await createRequest();
-        await addLanguageToRequest(request.r_id, 'javascript');
-        await addLanguageToRequest(request.r_id, 'typescript');
+        await addRequestedLanguageToRequest(request.r_id, 'javascript');
+        await addRequestedLanguageToRequest(request.r_id, 'typescript');
 
-        const langs = await getLanguagesByRequestId(request.r_id);
+        const langs = await getRequestedLanguagesByRequestId(request.r_id);
         expect(langs).toHaveLength(2);
         const langNames = langs.map((l) => l.language);
         expect(langNames).toContain('javascript');
@@ -77,23 +77,23 @@ describe('Language Service', () => {
     });
 
     it('should delete a specific language from a request', async () => {
-        await addLanguageToRequest(requestId, 'typescript');
-        const beforeDelete = await getLanguagesByRequestId(requestId);
+        await addRequestedLanguageToRequest(requestId, 'typescript');
+        const beforeDelete = await getRequestedLanguagesByRequestId(requestId);
         expect(beforeDelete).toHaveLength(1);
 
-        await deleteLanguageFromRequest(requestId, 'typescript');
-        const afterDelete = await getLanguagesByRequestId(requestId);
+        await deleteRequestedLanguageFromRequest(requestId, 'typescript');
+        const afterDelete = await getRequestedLanguagesByRequestId(requestId);
         expect(afterDelete).toHaveLength(0);
     });
 
     it('should delete all languages for a request', async () => {
-        await addLanguageToRequest(requestId, 'typescript');
-        await addLanguageToRequest(requestId, 'javascript');
-        const beforeDelete = await getLanguagesByRequestId(requestId);
+        await addRequestedLanguageToRequest(requestId, 'typescript');
+        await addRequestedLanguageToRequest(requestId, 'javascript');
+        const beforeDelete = await getRequestedLanguagesByRequestId(requestId);
         expect(beforeDelete).toHaveLength(2);
 
-        await deleteAllLanguagesFromRequest(requestId);
-        const afterDelete = await getLanguagesByRequestId(requestId);
+        await deleteAllRequestedLanguagesFromRequest(requestId);
+        const afterDelete = await getRequestedLanguagesByRequestId(requestId);
         expect(afterDelete).toHaveLength(0);
     });
 });

@@ -12,7 +12,7 @@ export const createRequest = async ({
 	requestor_id: string;
 	repo_url: string;
 	status?: string;
-	description?: string;
+	description?: string | null;
 }) => {
 	return await db
 		.insert(schema.requests)
@@ -20,7 +20,7 @@ export const createRequest = async ({
 			requestor_id,
 			repo_url,
 			status: status ?? 'open',
-			description: description ?? 'test'
+			description: description ?? null,
 		})
 		.returning();
 };
@@ -35,6 +35,10 @@ export const getAllRequests = async () => {
 			requestor_id: schema.requests.requestor_id,
 			status: schema.requests.status,
 			description: schema.requests.description,
+			current_languages: {
+				request_id: schema.cur_languages.request_id,
+				language: schema.cur_languages.language
+			},
 			requested_languages: {
 				request_id: schema.languages.request_id,
 				language: schema.languages.language
@@ -46,6 +50,7 @@ export const getAllRequests = async () => {
 		})
 		.from(schema.requests)
 		.leftJoin(schema.tags, eq(schema.requests.r_id, schema.tags.request_id))
+		.leftJoin(schema.cur_languages, eq(schema.requests.r_id, schema.cur_languages.request_id))
 		.leftJoin(schema.languages, eq(schema.requests.r_id, schema.languages.request_id))
 
 	//return null if no rows found
@@ -63,6 +68,7 @@ export const getAllRequests = async () => {
 				status: row.status ?? 'open',
 				description: row.description,
 				tags: [],
+				current_languages: [],
 				requested_languages: []
 			};
 		}
@@ -74,6 +80,12 @@ export const getAllRequests = async () => {
 			!return_request[row.r_id].requested_languages.includes(row.requested_languages.language)
 		) {
 			return_request[row.r_id].requested_languages.push(row.requested_languages.language);
+		}
+		if (
+			row.current_languages?.language &&
+			!return_request[row.r_id].current_languages.includes(row.current_languages.language)
+		) {
+			return_request[row.r_id].current_languages.push(row.current_languages.language);
 		}
 	}
 
@@ -90,6 +102,10 @@ export const getRequestById = async (r_id: string) => {
 			requestor_id: schema.requests.requestor_id,
 			status: schema.requests.status,
 			description: schema.requests.description,
+			current_languages: {
+				request_id: schema.cur_languages.request_id,
+				language: schema.cur_languages.language
+			},
 			requested_languages: {
 				request_id: schema.languages.request_id,
 				language: schema.languages.language
@@ -101,6 +117,7 @@ export const getRequestById = async (r_id: string) => {
 		})
 		.from(schema.requests)
 		.leftJoin(schema.tags, eq(schema.requests.r_id, schema.tags.request_id))
+		.leftJoin(schema.cur_languages, eq(schema.requests.r_id, schema.cur_languages.request_id))
 		.leftJoin(schema.languages, eq(schema.requests.r_id, schema.languages.request_id))
 		.where(eq(schema.requests.r_id, r_id));
 
@@ -113,6 +130,7 @@ export const getRequestById = async (r_id: string) => {
 		requestor_id: rows[0].requestor_id,
 		status: rows[0].status,
 		description: rows[0].description,
+		current_languages: [],
 		requested_languages: [],
 		tags: []
 	};
@@ -121,6 +139,14 @@ export const getRequestById = async (r_id: string) => {
 		...new Set(
 			rows
 				.map((row) => row.requested_languages?.language)
+				.filter((language): language is string => language !== null && language !== undefined)
+		)
+	];
+
+	return_request.current_languages = [
+		...new Set(
+			rows
+				.map((row) => row.current_languages?.language)
 				.filter((language): language is string => language !== null && language !== undefined)
 		)
 	];
@@ -146,6 +172,10 @@ export const getRequestsByUser = async (userId: string) => {
 			requestor_id: schema.requests.requestor_id,
 			status: schema.requests.status,
 			description: schema.requests.description,
+			current_languages: {
+				request_id: schema.cur_languages.request_id,
+				language: schema.cur_languages.language
+			},
 			requested_languages: {
 				request_id: schema.languages.request_id,
 				language: schema.languages.language
@@ -157,6 +187,7 @@ export const getRequestsByUser = async (userId: string) => {
 		})
 		.from(schema.requests)
 		.leftJoin(schema.tags, eq(schema.requests.r_id, schema.tags.request_id))
+		.leftJoin(schema.cur_languages, eq(schema.requests.r_id, schema.cur_languages.request_id))
 		.leftJoin(schema.languages, eq(schema.requests.r_id, schema.languages.request_id))
 		.where(eq(schema.requests.requestor_id, userId));
 
@@ -175,6 +206,7 @@ export const getRequestsByUser = async (userId: string) => {
 					status: row.status ?? 'open',
 					description: row.description,
 					tags: [],
+					current_languages: [],
 					requested_languages: []
 				};
 			}
@@ -186,6 +218,12 @@ export const getRequestsByUser = async (userId: string) => {
 				!return_request[row.r_id].requested_languages.includes(row.requested_languages.language)
 			) {
 				return_request[row.r_id].requested_languages.push(row.requested_languages.language);
+			}
+			if (
+				row.current_languages?.language &&
+				!return_request[row.r_id].current_languages.includes(row.current_languages.language)
+			) {
+				return_request[row.r_id].current_languages.push(row.current_languages.language);
 			}
 		}
 
@@ -217,6 +255,7 @@ type RequestWithLanguageAndTags = {
 	requestor_id: string;
 	status: string | null;
 	description: string | null;
+	current_languages: string[];
 	requested_languages: string[];
 	tags: string[];
 };

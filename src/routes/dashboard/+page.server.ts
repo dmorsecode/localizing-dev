@@ -4,7 +4,8 @@ import { superValidate } from "sveltekit-superforms";
 import { formSchema } from "$lib/components/forms/repo-submission-form/schema";
 import { zod } from "sveltekit-superforms/adapters";
 import { createRequest, getRequestsByUser } from '$lib/server/services/requestService';
-import { addLanguageToRequest } from '$lib/server/services/languageService';
+import { addRequestedLanguageToRequest } from '$lib/server/services/languageService';
+import { addCurrentLanguageToRequest } from '$lib/server/services/curr_languageService';
 import { addTagsToRequest } from '$lib/server/services/tagService';
 
 export async function load(event: RequestEvent) {
@@ -42,12 +43,15 @@ async function addRepo(event: RequestEvent) {
 	const requestObject = {
 		requestor_id: event.locals.user.id,
 		repo_url: form.data.url,
-		current_language: form.data.currentLangs[0],
-		status: 'open'
+		status: 'open',
+		description: form.data.description
 	}
 	const reqResponse = await createRequest(requestObject);
+	for (let i = 0; i < form.data.currentLangs.length; i++) {
+		await addCurrentLanguageToRequest(reqResponse[0].r_id, form.data.currentLangs[i]);
+	}
 	for (let i = 0; i < form.data.requestedLangs.length; i++) {
-		await addLanguageToRequest(reqResponse[0].r_id, form.data.requestedLangs[i]);
+		await addRequestedLanguageToRequest(reqResponse[0].r_id, form.data.requestedLangs[i]);
 	}
 	addTagsToRequest(reqResponse[0].r_id, form.data.tags);
 
