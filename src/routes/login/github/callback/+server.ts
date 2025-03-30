@@ -45,7 +45,7 @@ export async function GET(event: RequestEvent): Promise<Response> {
 
 	if (existingUser) {
 		const sessionToken = generateSessionToken();
-		const session = await createSession(sessionToken, existingUser.id);
+		const session = await createSession(sessionToken, existingUser.id, tokens.accessToken());
 		setSessionTokenCookie(event, sessionToken, session.expiresAt);
 		return new Response(null, {
 			status: 302,
@@ -58,7 +58,7 @@ export async function GET(event: RequestEvent): Promise<Response> {
 	const user = await createUser(githubUserId, githubEmail, githubUsername, githubAvatar);
 
 	const sessionToken = generateSessionToken();
-	const session = await createSession(sessionToken, user.id);
+	const session = await createSession(sessionToken, user.id, tokens.accessToken());
 	setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
 	return new Response(null, {

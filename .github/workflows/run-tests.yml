@@ -27,6 +27,10 @@ jobs:
         node-version: lts/*
         cache: 'npm'
     - run: npm ci
+    - name: Push DB Schema
+      run: npm run db:push
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
     - name: Run Vitest
       run: npm run test:unit run
       env:
