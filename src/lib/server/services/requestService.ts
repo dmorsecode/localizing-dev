@@ -6,21 +6,21 @@ import * as schema from '$lib/server/db/schema';
 export const createRequest = async ({
 	requestor_id,
 	repo_url,
-	current_language,
-	status
+	status,
+	description
 }: {
 	requestor_id: string;
 	repo_url: string;
-	current_language: string;
 	status?: string;
+	description?: string;
 }) => {
 	return await db
 		.insert(schema.requests)
 		.values({
 			requestor_id,
 			repo_url,
-			current_language,
-			status: status ?? 'open'
+			status: status ?? 'open',
+			description: description ?? 'test'
 		})
 		.returning();
 };
@@ -34,7 +34,7 @@ export const getAllRequests = async () => {
 			repo_url: schema.requests.repo_url,
 			requestor_id: schema.requests.requestor_id,
 			status: schema.requests.status,
-			current_language: schema.requests.current_language,
+			description: schema.requests.description,
 			requested_languages: {
 				request_id: schema.languages.request_id,
 				language: schema.languages.language
@@ -61,7 +61,7 @@ export const getAllRequests = async () => {
 				repo_url: row.repo_url,
 				requestor_id: row.requestor_id,
 				status: row.status ?? 'open',
-				current_language: row.current_language,
+				description: row.description,
 				tags: [],
 				requested_languages: []
 			};
@@ -89,7 +89,7 @@ export const getRequestById = async (r_id: string) => {
 			repo_url: schema.requests.repo_url,
 			requestor_id: schema.requests.requestor_id,
 			status: schema.requests.status,
-			current_language: schema.requests.current_language,
+			description: schema.requests.description,
 			requested_languages: {
 				request_id: schema.languages.request_id,
 				language: schema.languages.language
@@ -112,7 +112,7 @@ export const getRequestById = async (r_id: string) => {
 		repo_url: rows[0].repo_url,
 		requestor_id: rows[0].requestor_id,
 		status: rows[0].status,
-		current_language: rows[0].current_language,
+		description: rows[0].description,
 		requested_languages: [],
 		tags: []
 	};
@@ -145,7 +145,7 @@ export const getRequestsByUser = async (userId: string) => {
 			repo_url: schema.requests.repo_url,
 			requestor_id: schema.requests.requestor_id,
 			status: schema.requests.status,
-			current_language: schema.requests.current_language,
+			description: schema.requests.description,
 			requested_languages: {
 				request_id: schema.languages.request_id,
 				language: schema.languages.language
@@ -173,7 +173,7 @@ export const getRequestsByUser = async (userId: string) => {
 					repo_url: row.repo_url,
 					requestor_id: row.requestor_id,
 					status: row.status ?? 'open',
-					current_language: row.current_language,
+					description: row.description,
 					tags: [],
 					requested_languages: []
 				};
@@ -216,7 +216,7 @@ type RequestWithLanguageAndTags = {
 	repo_url: string;
 	requestor_id: string;
 	status: string | null;
-	current_language: string;
+	description: string | null;
 	requested_languages: string[];
 	tags: string[];
 };
