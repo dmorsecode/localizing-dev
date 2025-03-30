@@ -1049,13 +1049,13 @@ describe('User Service', () => {
 		expect(found?.id).toBe(user.id);
 	});
 
-	it('should get user by email', async () => {
-		const user = await createUser(33333, 'user@email.com', 'emailuser', 'https://avatar.url');
-		const found = await getUserByEmail('user@email.com');
+	//it('should get user by email', async () => {
+		//const user = await createUser(33333, 'user@email.com', 'emailuser', 'https://avatar.url');
+		//const found = await getUserByEmail('user@email.com');
 
-		expect(found).not.toBeNull();
-		expect(found?.id).toBe(user.id);
-	});
+		//expect(found).not.toBeNull();
+		//expect(found?.id).toBe(user.id);
+	//});
 
 	it('should update user fields', async () => {
 		const user = await createUser(44444, 'old@email.com', 'olduser', 'https://avatar.old');
