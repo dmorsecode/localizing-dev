@@ -19,12 +19,13 @@ export function generateSessionToken() {
 	return token;
 }
 
-export async function createSession(token: string, userId: string) {
+export async function createSession(token: string, userId: string, githubToken: string) {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	const session: table.Session = {
 		id: sessionId,
 		userId,
-		expiresAt: new Date(Date.now() + DAY_IN_MS * 30)
+		expiresAt: new Date(Date.now() + DAY_IN_MS * 30),
+		githubToken
 	};
 	await db.insert(table.session).values(session);
 	return session;
@@ -36,7 +37,7 @@ export async function validateSessionToken(token: string) {
 		.select({
 			// Adjust user table here to tweak returned data
 			user: { id: table.user.id, githubId: table.user.githubId, username: table.user.username, avatar: table.user.avatar },
-			session: table.session
+			session: table.session, githubToken: table.session.githubToken
 		})
 		.from(table.session)
 		.innerJoin(table.user, eq(table.session.userId, table.user.id))
