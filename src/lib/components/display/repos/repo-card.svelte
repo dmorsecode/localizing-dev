@@ -8,6 +8,8 @@
 	import { GitFork } from 'lucide-svelte';
 	import { LANGS } from '$lib/i18n';
 	import RepoSkeleton from '$lib/components/display/repos/repo-skeleton.svelte';
+	import { onMount } from 'svelte';
+
 
 	export let repo;
 	export let dashRequests = false;
@@ -38,13 +40,18 @@
 			name: ""
 		},
 	};
-	(async () => {
-		// our repo.repo_url is the full url. we want everything after the .com
-		const apiEndpoint = repo.repo_url.split(".com/")[1];
-		const repoRes = await fetch(`https://api.github.com/repos/${apiEndpoint}`);
-		repoData = await repoRes.json();
-		console.log(repo);
-	})();
+	// (async () => {
+	// 	// our repo.repo_url is the full url. we want everything after the .com
+	// 	const apiEndpoint = repo.repo_url.split(".com/")[1];
+	// 	const repoRes = await fetch(`https://api.github.com/repos/${apiEndpoint}`);
+	// 	repoData = await repoRes.json();
+	// 	console.log(repo);
+	// })();
+	onMount(async () => {
+		const apiEndpoint = repo.repo_url.split('.com/')[1];
+		const res = await fetch(`/api/github/repo?path=${apiEndpoint}`);
+		repoData = await res.json();
+	});
 </script>
 
 {#if repoData.html_url === ""}

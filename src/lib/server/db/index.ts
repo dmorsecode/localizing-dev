@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS "user" (
 CREATE TABLE IF NOT EXISTS "session" (
 	id text PRIMARY KEY,
 	user_id text REFERENCES "user" (id),
-	expires_at timestamp with time zone NOT NULL
+	expires_at timestamp with time zone NOT NULL,
+	github_token text NOT NULL
 );
 CREATE TABLE IF NOT EXISTS "leaderboard" (
 	l_id text PRIMARY KEY,
