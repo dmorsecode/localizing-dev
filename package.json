@@ -16,7 +16,7 @@
 		"test": "npm run test:unit -- --run && npm run test:e2e",
 		"test:coverage": "vitest run --coverage",
 		"test:e2e": "playwright test",
-		"db:push": "drizzle-kit push --force",
+		"db:push": "drizzle-kit push --yes",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
 		"db:generate": "drizzle-kit generate",
