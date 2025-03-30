@@ -676,7 +676,7 @@ describe('Session Service', () => {
             id: userId,
             githubId: githubId,
             username: 'sessionuser',
-            avatar: 'https://avatar.example.com'
+            avatar: 'https://avatar.example.com',
         });
     });
 
