@@ -10,7 +10,7 @@
 	import RepoSkeleton from '$lib/components/display/repos/repo-skeleton.svelte';
 
 	export let repo;
-	export let dashRequests = false;
+	export let dashboard = false;
 
 	// define repo interface
 	interface RepoData {
@@ -91,7 +91,7 @@
 		<Card.Footer class="p-2 flex justify-between gap-2">
 			<p
 				class={`${repoData.license == null ? "italic text-primary/60" : ""} grow`}>{repoData.license?.name ?? "No license."}</p>
-			{#if !dashRequests}
+			{#if !dashboard}
 				<Button href={`${repoData.html_url + "/fork"}`} target="_blank" rel="noopener noreferrer" variant="outline">
 					<GitFork size={16} class="mr-2" />
 					Contribute

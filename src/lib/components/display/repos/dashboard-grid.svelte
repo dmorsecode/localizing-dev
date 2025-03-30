@@ -3,25 +3,20 @@
 	import SubmissionCard from '$lib/components/display/repos/submission-card.svelte';
 	import RepoAdd from '$lib/components/display/repos/repo-add.svelte';
 
-	export let form = null;
-	export let userRepos = null;
+	export let form;
+	export let userRepos;
 	export let reposToDisplay;
-	export let type = "request";
-	export let dashboard = false;
+
+	let type = form.data.providedLanguage != null ? "submission" : "request";
 </script>
 
 <div class="flex flex-wrap gap-4">
-	{#if reposToDisplay?.length === 0 && !dashboard}
-		<p class="text-center text-muted-foreground">No repositories found.</p>
-	{/if}
 	{#each reposToDisplay as repo}
 		{#if type === "request"}
-			<RequestCard {repo} {dashboard} />
+			<RequestCard {repo} dashboard={true} />
 		{:else}
-			<SubmissionCard {repo} {dashboard} />
+			<SubmissionCard {repo} dashboard={true} />
 		{/if}
 	{/each}
-	{#if dashboard}
-		<RepoAdd {userRepos} {form} />
-	{/if}
+	<RepoAdd {userRepos} {form} {type} />
 </div>

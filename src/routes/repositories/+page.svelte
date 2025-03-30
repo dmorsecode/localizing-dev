@@ -16,4 +16,4 @@
 
 <Separator class="my-8" />
 
-<RepoGrid reposToDisplay={data.repos} />
+<RepoGrid reposToDisplay={data.repos} type="request" />

@@ -35,6 +35,8 @@ export async function GET(event: RequestEvent): Promise<Response> {
 		}
 	});
 
+	console.log(tokens.accessToken());
+
 	const githubUser = await githubUserResponse.json();
 	const githubUserId = githubUser.id;
 	const githubEmail = githubUser.email;
