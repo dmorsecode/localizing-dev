@@ -23,16 +23,6 @@ export { db };
 
 await db.execute(`
 
-DROP TABLE IF EXISTS "notifications" CASCADE;
-DROP TABLE IF EXISTS "reviews" CASCADE;
-DROP TABLE IF EXISTS "submission" CASCADE;
-DROP TABLE IF EXISTS "languages" CASCADE;
-DROP TABLE IF EXISTS "tags" CASCADE;
-DROP TABLE IF EXISTS "requests" CASCADE;
-DROP TABLE IF EXISTS "leaderboard" CASCADE;
-DROP TABLE IF EXISTS "session" CASCADE;
-DROP TABLE IF EXISTS "user" CASCADE;
-
 CREATE TABLE IF NOT EXISTS "user" (
 	id text PRIMARY KEY,
 	"githubId" integer NOT NULL UNIQUE,
@@ -46,7 +36,8 @@ CREATE TABLE IF NOT EXISTS "user" (
 CREATE TABLE IF NOT EXISTS "session" (
 	id text PRIMARY KEY,
 	user_id text REFERENCES "user" (id),
-	expires_at timestamp with time zone NOT NULL
+	expires_at timestamp with time zone NOT NULL,
+	github_token text NOT NULL
 );
 CREATE TABLE IF NOT EXISTS "leaderboard" (
 	l_id text PRIMARY KEY,
@@ -58,10 +49,8 @@ CREATE TABLE IF NOT EXISTS "requests" (
 	r_id text PRIMARY KEY,
 	requestor_id text NOT NULL REFERENCES "user" (id),
 	repo_URL text NOT NULL,
-	current_language text NOT NULL,
 	status text DEFAULT 'open',
-	tag01 text,
-	tag02 text,
+	description text,
 	created_at timestamp DEFAULT now(),
 	expires_at timestamp DEFAULT (now() + '60 days'::interval)
 );
@@ -74,6 +63,11 @@ CREATE TABLE IF NOT EXISTS tags (
 	request_id TEXT NOT NULL REFERENCES "requests" (r_id) ON DELETE CASCADE,
 	tag TEXT NOT NULL,
 	PRIMARY KEY (request_id, tag)
+);
+CREATE TABLE IF NOT EXISTS "cur_languages" (
+	request_id TEXT NOT NULL REFERENCES "requests" (r_id) ON DELETE CASCADE,
+	language TEXT NOT NULL,
+	PRIMARY KEY (request_id, language)
 );
 CREATE TABLE IF NOT EXISTS "submission" (
 	s_id text PRIMARY KEY,
