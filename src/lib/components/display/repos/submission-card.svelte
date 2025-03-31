@@ -8,13 +8,13 @@
 	import { GitFork } from 'lucide-svelte';
 	import { LANGS } from '$lib/i18n';
 	import RepoSkeleton from '$lib/components/display/repos/repo-skeleton.svelte';
+	import { onMount } from 'svelte';
 
 	export let repo;
 	export let dashboard = false;
 
 	interface SubmissionData {
 		name: string,
-		html_url: string,
 		owner: {
 			login: string,
 			avatar_url: string
@@ -31,7 +31,6 @@
 
 	let submissionData: SubmissionData = {
 		name: "",
-		html_url: "",
 		owner: {
 			login: "",
 			avatar_url: ""
@@ -46,33 +45,28 @@
 		mergedAt: new Date(),
 	};
 
-	(async () => {
-		// our repo.repo_url is the full url. we want everything after the .com
-		const apiEndpoint = repo.pull_url.split(".com/")[1];
-		const repoOwner = apiEndpoint.split("/")[0];
-		const repoName = apiEndpoint.split("/")[1];
-		const pullNumber = apiEndpoint.split("/")[3];
-		const pullData = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/pulls/${pullNumber}`);
-		// use application/vnd.github.diff for the diff
-		const diffData = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/pulls/${pullNumber}`, {
-			headers: {
-				'Accept': 'application/vnd.github.diff'
-			}
-		});
+	onMount(async () => {
+		const apiEndpoint = repo.pull_url.split('.com/')[1];
+		const pullData = await fetch(`/api/github/pull?path=${apiEndpoint}`);
+		const diffData = await fetch(`/api/github/diff?path=${apiEndpoint}`);
+
 		const pull = await pullData.json();
-		const diff = await diffData.text();
+		const diff = await diffData.json();
+
+		const reqData = await fetch(`/api/db/request?path=${pull.base?.repo.html_url}`);
+		const req = await reqData.json();
+
 		// Split diff by newlines, count the byte size of every line that starts with a +. Basic algorithm for how many leaderboard points the diff is worth.
 		const diffLines = diff.split("\n").filter(line => line.startsWith("+"));
 		const diffSize = Math.floor(diffLines.reduce((acc, line) => acc + new Blob([line]).size, 0) / 10); // Divided by 10 to combat point inflation.
-		// convert the string merged_at timestamp to a Date though
+
 		submissionData = {
 			name: pull.base?.repo.name,
-			html_url: pull.html_url,
 			owner: {
 				login: pull.base?.repo.owner.login,
 				avatar_url: pull.base?.repo.owner.avatar_url,
 			},
-			description: pull.body,
+			description: req.description,
 			additions: pull.additions,
 			deletions: pull.deletions,
 			commits: pull.commits,
@@ -81,15 +75,15 @@
 			status: pull.merged ? "merged" : "on review",
 			mergedAt: pull.merged_at ? new Date(pull.merged_at) : null,
 		}
-	})();
+	});
 </script>
 
-{#if submissionData.html_url === ""}
+{#if submissionData.pull_url === ""}
 	<RepoSkeleton />
 {:else}
 	<Card.Root
 		class="flex flex-col shadow-sm border-gray-600/15 text-sm grow basis-1/3 max-w-[calc(50%-1rem)] md:basis-1/4 md:max-w-[calc(33%-1rem)] lg:basis-1/5 lg:max-w-[calc(25%-1rem)]">
-		<a href="{submissionData.html_url}" target="_blank" rel="noopener noreferrer">
+		<a href="{submissionData.pull_url}" target="_blank" rel="noopener noreferrer">
 			<Card.Header class="p-2 pb-0 flex flex-row items-start gap-2">
 				<Avatar.Root>
 					<Avatar.Image src="{submissionData.owner?.avatar_url}" alt="{submissionData.owner?.login}" />

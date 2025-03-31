@@ -2,6 +2,8 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 
 	export let userInfo;
+	export let submissionCount = 0;
+	export let score = 0;
 </script>
 
 <div class="w-full h-[20vh] bg-gradient-to-b from-50% from-cyan-300 via-white to-transparent rounded-l-full flex gap-4 mb-4">
@@ -12,8 +14,8 @@
 	<div class="h-full w-full flex flex-col">
 		<div class="flex h-1/2 items-start text-[calc(20vh/3)] font-semibold">{userInfo.username}</div>
 		<div class="flex flex-col h-1/2 items-start">
-			<div class="text-[calc(20vh/8)]">Leaderboard Score: {Math.round(Math.random() * 1000)}</div>
-			<div class="text-[calc(20vh/8)]">Contributions Accepted: {Math.round(Math.random() * 20)}</div>
+			<div class="text-[calc(20vh/8)]">Leaderboard Score: {score}</div>
+			<div class="text-[calc(20vh/8)]">Contributions Accepted: {submissionCount}</div>
 		</div>
 	</div>
 </div>

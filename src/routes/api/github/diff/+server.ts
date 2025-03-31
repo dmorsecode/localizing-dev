@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { validateSessionToken } from '$lib/server/auth';
-import { fetchRepoData } from '$lib/server/github/apiServices';
+import { fetchDiffData } from '$lib/server/github/apiServices';
 import type { RequestEvent } from '@sveltejs/kit';
 
 
@@ -12,7 +12,7 @@ export async function GET({ url, cookies }: RequestEvent) {
 	if (!path) return new Response('Missing path', { status: 400 });
 
 	try {
-		const data = session?.githubToken ? await fetchRepoData(path, session.githubToken) : await fetchRepoData(path, null);
+		const data = session?.githubToken ? await fetchDiffData(path, session.githubToken) : await fetchDiffData(path, null);
 		return json(data);
 	} catch (err) {
 		console.error(`GitHub API failed for ${path}:`, err);

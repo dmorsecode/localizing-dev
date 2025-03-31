@@ -84,7 +84,7 @@
 				<Table.Body>
 					<Table.Row>
 						<Table.Cell class="px-2 align-top">
-							{#each repo.requested_languages as lang}
+							{#each repo.current_languages as lang}
 								<p>{LANGS.find((l) => l.code === lang)?.name}</p>
 							{/each}
 						</Table.Cell>

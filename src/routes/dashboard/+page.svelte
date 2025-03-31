@@ -7,8 +7,8 @@
 	let { data }: PageProps = $props();
 </script>
 
-{#await data then { user, requests, submissions, repos, requestForm, submissionForm }}
-	<ProfileBanner userInfo={user} />
+{#await data then { user, requests, submissions, repos, leaderboardScore, requestForm, submissionForm }}
+	<ProfileBanner userInfo={user} score={leaderboardScore.l_score} submissionCount={submissions.filter(sub => sub.status === "merged").length} />
 
 	<Separator class="my-4" />
 

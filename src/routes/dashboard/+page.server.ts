@@ -1,6 +1,4 @@
 import { fail, error } from '@sveltejs/kit';
-import type { Actions, RequestEvent } from './$types.js';
-import { fail } from "@sveltejs/kit";
 import type { Actions, RequestEvent } from "./$types.js";
 import { superValidate } from "sveltekit-superforms";
 import { requestFormSchema } from "$lib/components/forms/repo-request-form/schema";
@@ -11,7 +9,8 @@ import { addCurrentLanguageToRequest } from '$lib/server/services/curr_languageS
 import { createRequest, getRequestsByUser, getRequestByRepoUrl } from '$lib/server/services/requestService';
 import { addTagsToRequest } from '$lib/server/services/tagService';
 import { getSubmissionsByTranslatorId, createSubmission } from '$lib/server/services/submissionService';
-import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from "$env/static/private";
+import { isUserIdOnLeaderboard, createLeaderboardEntry, incrementLeaderboardScore, getLeaderboardEntryByUserId } from '$lib/server/services/leaderboardService';
+import { fetchDiffData } from '$lib/server/github/apiServices';
 
 
 export async function load(event: RequestEvent) {
@@ -22,6 +21,7 @@ export async function load(event: RequestEvent) {
 	const githubToken = event.locals.session?.githubToken;
 	if (!githubToken) throw error(401, 'Missing GitHub token');
 
+	// TODO: Use githubService.
 	const reposRes = await fetch(`https://api.github.com/users/${event.locals.user.username}/repos`, {
 		headers: {
 			Authorization: `Bearer ${githubToken}`,
@@ -38,14 +38,15 @@ export async function load(event: RequestEvent) {
 
 	const requests = await getRequestsByUser(event.locals.user.id);
 	const submissions = await getSubmissionsByTranslatorId(event.locals.user.id);
+	const leaderboardScore = await getLeaderboardEntryByUserId(event.locals.user.id);
 
 	return {
 		requestForm: await superValidate(zod(requestFormSchema)),
 		submissionForm: await superValidate(zod(submissionFormSchema)),
 		requests: await requests,
 		submissions: await submissions,
-		repos: await repos.json()
-		repos: await repos
+		repos: await repos,
+		leaderboardScore: await leaderboardScore
 	};
 }
 
@@ -72,10 +73,19 @@ async function submitSubmission(event: RequestEvent) {
 		});
 	}
 
+	const githubToken = event.locals.session?.githubToken;
+	if (!githubToken) throw error(401, 'Missing GitHub token');
+
 	const repoOwner = url.pathname.split("/")[1];
 	const repoName = url.pathname.split("/")[2];
 	const pullNumber = url.pathname.split("/")[4];
-	const pullData = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/pulls/${pullNumber}`);
+	// TODO: Use githubService.
+	const pullData = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/pulls/${pullNumber}`, {
+		headers: {
+			Authorization: `Bearer ${githubToken}`,
+			Accept: 'application/vnd.github+json'
+		}
+	});
 
 	const pull = await pullData.json();
 	const isMerged = pull.merged;
@@ -87,12 +97,32 @@ async function submitSubmission(event: RequestEvent) {
 	// }
 
 	const submissionObject = {
-		translator_id: event.locals.user?.id,
+		translator_id: event.locals.user!.id,
 		request_id: request.r_id,
 		pull_url: form.data.url,
 		status: isMerged ? "merged" : "on review",
 	}
 	await createSubmission(submissionObject);
+
+	if (!isMerged) return {
+		form
+	};
+
+	const diff = await fetchDiffData(url.pathname.substring(1), githubToken);
+	// Split diff by newlines, count the byte size of every line that starts with a +. Basic algorithm for how many leaderboard points the diff is worth.
+	const diffLines = diff.split("\n").filter(line => line.startsWith("+"));
+	const diffSize = Math.floor(diffLines.reduce((acc, line) => acc + new Blob([line]).size, 0) / 10); // Divided by 10 to combat point inflation.
+
+	const onLeaderboard = await isUserIdOnLeaderboard(event.locals.user.id);
+
+	if (onLeaderboard) {
+		await incrementLeaderboardScore(event.locals.user.id, diffSize);
+	} else {
+		await createLeaderboardEntry(event.locals.user.id, diffSize)
+			.then(() => {
+				incrementLeaderboardScore(event.locals.user.id, diffSize);
+			});
+	}
 
 	return {
 		form

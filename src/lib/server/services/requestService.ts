@@ -171,7 +171,11 @@ export const getRequestByRepoUrl = async (repo_url: string) => {
 			repo_url: schema.requests.repo_url,
 			requestor_id: schema.requests.requestor_id,
 			status: schema.requests.status,
-			current_language: schema.requests.current_language,
+			description: schema.requests.description,
+			current_languages: {
+				request_id: schema.cur_languages.request_id,
+				language: schema.cur_languages.language
+			},
 			requested_languages: {
 				request_id: schema.languages.request_id,
 				language: schema.languages.language
@@ -184,6 +188,7 @@ export const getRequestByRepoUrl = async (repo_url: string) => {
 		.from(schema.requests)
 		.leftJoin(schema.tags, eq(schema.requests.r_id, schema.tags.request_id))
 		.leftJoin(schema.languages, eq(schema.requests.r_id, schema.languages.request_id))
+		.leftJoin(schema.cur_languages, eq(schema.requests.r_id, schema.cur_languages.request_id))
 		.where(eq(schema.requests.repo_url, repo_url));
 
 	//return null if no rows found
@@ -194,7 +199,8 @@ export const getRequestByRepoUrl = async (repo_url: string) => {
 		repo_url: rows[0].repo_url,
 		requestor_id: rows[0].requestor_id,
 		status: rows[0].status,
-		current_language: rows[0].current_language,
+		description: rows[0].description,
+		current_languages: [],
 		requested_languages: [],
 		tags: []
 	};
@@ -203,6 +209,14 @@ export const getRequestByRepoUrl = async (repo_url: string) => {
 		...new Set(
 			rows
 				.map((row) => row.requested_languages?.language)
+				.filter((language): language is string => language !== null && language !== undefined)
+		)
+	];
+
+	return_request.current_languages = [
+		...new Set(
+			rows
+				.map((row) => row.current_languages?.language)
 				.filter((language): language is string => language !== null && language !== undefined)
 		)
 	];
