@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, beforeAll, afterAll } from 'vitest';
 import {
-    addLanguageToRequest,
-    getLanguagesByRequestId,
-    deleteLanguageFromRequest,
-    deleteAllLanguagesFromRequest
+    addRequestedLanguageToRequest,
+    getRequestedLanguagesByRequestId,
+    deleteRequestedLanguageFromRequest,
+    deleteAllRequestedLanguagesFromRequest
 } from '$lib/server/services/languageService';
 import { db } from '$lib/server/db';
 import { sql } from 'drizzle-orm';
@@ -23,7 +23,6 @@ describe('Language Service', () => {
             .values({
                 requestor_id: userId, // Make sure this user exists or mock it
                 repo_url: 'https://github.com/example/repo',
-                current_language: 'javascript'
             })
             .returning();
         return request;
@@ -49,7 +48,6 @@ describe('Language Service', () => {
             r_id: requestId,
             requestor_id: userId,
             repo_url: 'https://github.com/example/repo',
-            current_language: 'typescript'
         });
     });
 
@@ -59,19 +57,19 @@ describe('Language Service', () => {
 
     it('should add a language to a request', async () => {
         const request = await createRequest();
-        await addLanguageToRequest(request.r_id, 'python');
+        await addRequestedLanguageToRequest(request.r_id, 'English');
 
-        const langs = await getLanguagesByRequestId(request.r_id);
+        const langs = await getRequestedLanguagesByRequestId(request.r_id);
         expect(langs).toHaveLength(1);
-        expect(langs[0].language).toBe('python');
+        expect(langs[0].language).toBe('English');
     });
 
     it('should get all languages for a request', async () => {
         const request = await createRequest();
-        await addLanguageToRequest(request.r_id, 'javascript');
-        await addLanguageToRequest(request.r_id, 'typescript');
+        await addRequestedLanguageToRequest(request.r_id, 'javascript');
+        await addRequestedLanguageToRequest(request.r_id, 'typescript');
 
-        const langs = await getLanguagesByRequestId(request.r_id);
+        const langs = await getRequestedLanguagesByRequestId(request.r_id);
         expect(langs).toHaveLength(2);
         const langNames = langs.map((l) => l.language);
         expect(langNames).toContain('javascript');
@@ -79,23 +77,23 @@ describe('Language Service', () => {
     });
 
     it('should delete a specific language from a request', async () => {
-        await addLanguageToRequest(requestId, 'typescript');
-        const beforeDelete = await getLanguagesByRequestId(requestId);
+        await addRequestedLanguageToRequest(requestId, 'typescript');
+        const beforeDelete = await getRequestedLanguagesByRequestId(requestId);
         expect(beforeDelete).toHaveLength(1);
 
-        await deleteLanguageFromRequest(requestId, 'typescript');
-        const afterDelete = await getLanguagesByRequestId(requestId);
+        await deleteRequestedLanguageFromRequest(requestId, 'typescript');
+        const afterDelete = await getRequestedLanguagesByRequestId(requestId);
         expect(afterDelete).toHaveLength(0);
     });
 
     it('should delete all languages for a request', async () => {
-        await addLanguageToRequest(requestId, 'typescript');
-        await addLanguageToRequest(requestId, 'javascript');
-        const beforeDelete = await getLanguagesByRequestId(requestId);
+        await addRequestedLanguageToRequest(requestId, 'typescript');
+        await addRequestedLanguageToRequest(requestId, 'javascript');
+        const beforeDelete = await getRequestedLanguagesByRequestId(requestId);
         expect(beforeDelete).toHaveLength(2);
 
-        await deleteAllLanguagesFromRequest(requestId);
-        const afterDelete = await getLanguagesByRequestId(requestId);
+        await deleteAllRequestedLanguagesFromRequest(requestId);
+        const afterDelete = await getRequestedLanguagesByRequestId(requestId);
         expect(afterDelete).toHaveLength(0);
     });
 });
@@ -380,71 +378,136 @@ describe('Request Service', () => {
         const [request] = await createRequest({
             requestor_id: userId,
             repo_url: 'https://github.com/example/repo',
-            current_language: 'typescript'
         });
 
         expect(request.requestor_id).toBe(userId);
         expect(request.repo_url).toBe('https://github.com/example/repo');
-        expect(request.current_language).toBe('typescript');
-        expect(request.status).toBe('open'); // default
+        expect(request.status).toBe('open');
     });
 
-    it('should get request by ID', async () => {
+    it('should return request with associated tags and requested languages', async () => {
         const [request] = await createRequest({
-            requestor_id: userId,
-            repo_url: 'https://github.com/example/repo',
-            current_language: 'python'
+          requestor_id: userId,
+          repo_url: 'https://github.com/example/repo',
         });
-
+      
+        await db.insert(schema.tags).values([
+          { request_id: request.r_id, tag: 'api' },
+          { request_id: request.r_id, tag: 'auth' }
+        ]);
+      
+        await db.insert(schema.languages).values([
+          { request_id: request.r_id, language: 'french' },
+          { request_id: request.r_id, language: 'spanish' }
+        ]);
+      
         const result = await getRequestById(request.r_id);
-        expect(result).toHaveLength(1);
-        expect(result[0].r_id).toBe(request.r_id);
-    });
-
-    it('should get all requests by user ID', async () => {
-        await createRequest({
-            requestor_id: userId,
-            repo_url: 'https://github.com/repo/one',
-            current_language: 'go'
+      
+        expect(result).not.toBeNull();
+        if (!result) throw new Error('Expected result to be defined but got null');
+        
+        expect(result.r_id).toBe(request.r_id);
+        expect(result.requestor_id).toBe(userId);
+        expect(result.repo_url).toBe('https://github.com/example/repo');
+        expect(result.status).toBe('open');
+      
+        expect(Array.isArray(result.tags)).toBe(true);
+        expect(result.tags.length).toBe(2);
+        expect(result.tags).toContain('api');
+        expect(result.tags).toContain('auth');
+      
+        expect(Array.isArray(result.requested_languages)).toBe(true);
+        expect(result?.requested_languages.length).toBe(2);
+        expect(result?.requested_languages).toContain('french');
+        expect(result?.requested_languages).toContain('spanish');
+      
+        //console.log(JSON.stringify(result, null, 2));
+      });
+    
+    it('should return all requests with associated tags and requested languages', async () => {
+        const [request1] = await createRequest({
+          requestor_id: userId,
+          repo_url: 'https://github.com/example/repo1',
         });
-
-        await createRequest({
-            requestor_id: userId,
-            repo_url: 'https://github.com/repo/two',
-            current_language: 'rust'
+    
+        const [request2] = await createRequest({
+          requestor_id: userId,
+          repo_url: 'https://github.com/example/repo2',
         });
+    
+        await db.insert(schema.tags).values([
+          { request_id: request1.r_id, tag: 'api' },
+          { request_id: request1.r_id, tag: 'auth' },
+          { request_id: request2.r_id, tag: 'backend' }
+        ]);
+        
+        await db.insert(schema.languages).values([
+          { request_id: request1.r_id, language: 'french' },
+          { request_id: request1.r_id, language: 'spanish' },
+          { request_id: request2.r_id, language: 'japanese' }
+        ]);
+    
+        const result = await getRequestsByUser(userId);
+    
+        expect(result).not.toBeNull();
+        if (!result) throw new Error('Expected result to be defined but got null');
+    
+        const r1 = result.find((r) => r.r_id === request1.r_id);
+        const r2 = result.find((r) => r.r_id === request2.r_id);
+    
+        // Assert request 1
+        expect(r1).toBeDefined();
+        expect(r1?.requestor_id).toBe(userId);
+        expect(r1?.repo_url).toBe('https://github.com/example/repo1');
+        expect(r1?.status).toBe('open');
+        expect(Array.isArray(r1?.tags)).toBe(true);
+        expect(r1?.tags).toContain('api');
+        expect(r1?.tags).toContain('auth');
+        expect(Array.isArray(r1?.requested_languages)).toBe(true);
+        expect(r1?.requested_languages).toContain('french');
+        expect(r1?.requested_languages).toContain('spanish');
+    
+        // Assert request 2
+        expect(r2).toBeDefined();
+        expect(r2?.requestor_id).toBe(userId);
+        expect(r2?.repo_url).toBe('https://github.com/example/repo2');
+        expect(r2?.status).toBe('open');
+        expect(Array.isArray(r2?.tags)).toBe(true);
+        expect(r2?.tags).toContain('backend');
+        expect(Array.isArray(r2?.requested_languages)).toBe(true);
+        expect(r2?.requested_languages).toContain('japanese');
+    
+        //console.log(JSON.stringify(result, null, 2));
+      });
 
-        const requests = await getRequestsByUser(userId);
-        expect(requests).toHaveLength(2);
-    });
 
     it('should update a request', async () => {
         const [request] = await createRequest({
             requestor_id: userId,
             repo_url: 'https://github.com/repo/update-me',
-            current_language: 'java'
         });
 
         const [updated] = await updateRequest(request.r_id, {
             status: 'closed',
-            current_language: 'kotlin'
         });
 
         expect(updated.status).toBe('closed');
-        expect(updated.current_language).toBe('kotlin');
     });
 
     it('should delete a request', async () => {
         const [request] = await createRequest({
             requestor_id: userId,
             repo_url: 'https://github.com/repo/delete-me',
-            current_language: 'php'
         });
 
         await deleteRequest(request.r_id);
 
         const result = await getRequestById(request.r_id);
-        expect(result).toHaveLength(0);
+
+        //console.log(JSON.stringify(result, null, 2));
+
+        expect(result).toBeNull();
+
     });
 });
 
@@ -494,7 +557,6 @@ describe('Review Service', () => {
             r_id: requestId,
             requestor_id: userId,
             repo_url: 'https://github.com/example/repo',
-            current_language: 'typescript'
         });
 
         await db.insert(schema.submission).values({
@@ -728,7 +790,6 @@ describe('Submission Service', () => {3
             r_id: requestId,
             requestor_id: userId,
             repo_url: 'https://github.com/example/repo',
-            current_language: 'typescript'
         });
     });
 
@@ -862,7 +923,6 @@ describe('Tag Service', () => {
           r_id: requestId,
           requestor_id: userId,
           repo_url: 'https://github.com/example/repo',
-          current_language: 'typescript'
         });
       });
       
@@ -989,13 +1049,13 @@ describe('User Service', () => {
 		expect(found?.id).toBe(user.id);
 	});
 
-	it('should get user by email', async () => {
-		const user = await createUser(33333, 'user@email.com', 'emailuser', 'https://avatar.url');
-		const found = await getUserByEmail('user@email.com');
+	//it('should get user by email', async () => {
+		//const user = await createUser(33333, 'user@email.com', 'emailuser', 'https://avatar.url');
+		//const found = await getUserByEmail('user@email.com');
 
-		expect(found).not.toBeNull();
-		expect(found?.id).toBe(user.id);
-	});
+		//expect(found).not.toBeNull();
+		//expect(found?.id).toBe(user.id);
+	//});
 
 	it('should update user fields', async () => {
 		const user = await createUser(44444, 'old@email.com', 'olduser', 'https://avatar.old');

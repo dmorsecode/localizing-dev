@@ -5,10 +5,9 @@ import { encodeBase64url, encodeHexLowerCase } from '@oslojs/encoding';
 import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
 import { GitHub } from "arctic";
-import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from "$env/static/private";
-import { dev } from '$app/environment';
+import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, CALLBACK_URL } from "$env/static/private";
 
-export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, "http://localhost:5173/login/github/callback");
+export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, CALLBACK_URL);
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 export const sessionCookieName = 'auth-session';

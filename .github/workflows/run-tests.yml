@@ -6,6 +6,7 @@ env:
   # DATABASE_URL: ${{ secrets.DATABASE_URL }}
   GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID}}
   GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET}}
+  CALLBACK_URL: ${{ secrets.CALLBACK_URL}}
 
 on:
   workflow_dispatch:
@@ -30,6 +31,7 @@ jobs:
       run: npm run test:unit run
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        CALLBACK_URL: ${{ secrets.CALLBACK_URL}}
   playwright:
     runs-on: ubuntu-latest
     steps:
@@ -45,3 +47,4 @@ jobs:
       run: npx playwright test
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        CALLBACK_URL: ${{ secrets.CALLBACK_URL}}

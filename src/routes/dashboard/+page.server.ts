@@ -1,17 +1,22 @@
-import { fail, redirect } from "@sveltejs/kit";
-import { deleteSessionTokenCookie, invalidateSession } from "$lib/server/auth";
+import { fail } from "@sveltejs/kit";
 import type { Actions, RequestEvent } from "./$types.js";
 import { superValidate } from "sveltekit-superforms";
 import { formSchema } from "$lib/components/forms/repo-submission-form/schema";
 import { zod } from "sveltekit-superforms/adapters";
+import { createRequest, getRequestsByUser } from '$lib/server/services/requestService';
+import { addRequestedLanguageToRequest } from '$lib/server/services/languageService';
+import { addCurrentLanguageToRequest } from '$lib/server/services/curr_languageService';
+import { addTagsToRequest } from '$lib/server/services/tagService';
 
 export async function load(event: RequestEvent) {
-	const repos = await fetch(`https://api.github.com/users/${event.locals.user?.username}/repos`);
-	const reposJson = await repos.json();
+	if (event.locals.user === null) return;
+	const repos = await fetch(`https://api.github.com/users/${event.locals.user.username}/repos`);
+	const requests = await getRequestsByUser(event.locals.user.id);
 
 	return {
 		form: await superValidate(zod(formSchema)),
-		repos: reposJson
+		requests: await requests,
+		repos: await repos.json()
 	};
 }
 
@@ -21,7 +26,6 @@ export const actions: Actions = {
 
 async function addRepo(event: RequestEvent) {
 	const form = await superValidate(event, zod(formSchema));
-	console.log(form);
 	const url = new URL(form.data.url);
 	if (url.hostname !== "github.com" || url.pathname.split("/")[1] !== event.locals.user?.username) {
 		return fail(400, {
@@ -35,7 +39,22 @@ async function addRepo(event: RequestEvent) {
 		});
 	}
 
-	// TODO: Save data to the database.
+	console.log(event.locals.user.id);
+	const requestObject = {
+		requestor_id: event.locals.user.id,
+		repo_url: form.data.url,
+		status: 'open',
+		description: form.data.description
+	}
+	const reqResponse = await createRequest(requestObject);
+	for (let i = 0; i < form.data.currentLangs.length; i++) {
+		await addCurrentLanguageToRequest(reqResponse[0].r_id, form.data.currentLangs[i]);
+	}
+	for (let i = 0; i < form.data.requestedLangs.length; i++) {
+		await addRequestedLanguageToRequest(reqResponse[0].r_id, form.data.requestedLangs[i]);
+	}
+	addTagsToRequest(reqResponse[0].r_id, form.data.tags);
+
 
 	return {
 		form,

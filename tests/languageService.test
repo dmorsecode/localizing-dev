@@ -59,11 +59,11 @@
 
 // 	it('should add a language to a request', async () => {
 // 		const request = await createRequest();
-// 		await addLanguageToRequest(request.r_id, 'python');
+// 		await addLanguageToRequest(request.r_id, 'English');
 
 // 		const langs = await getLanguagesByRequestId(request.r_id);
 // 		expect(langs).toHaveLength(1);
-// 		expect(langs[0].language).toBe('python');
+// 		expect(langs[0].language).toBe('English');
 // 	});
 
 // 	it('should get all languages for a request', async () => {
