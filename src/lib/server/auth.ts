@@ -10,6 +10,7 @@ import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, CALLBACK_URL } from "$env/stati
 export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, CALLBACK_URL);
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
+
 export const sessionCookieName = 'auth-session';
 
 export function generateSessionToken() {
@@ -26,33 +27,15 @@ export async function createSession(token: string, userId: string, githubToken: 
 		expiresAt: new Date(Date.now() + DAY_IN_MS * 30),
 		githubToken
 	};
-	if (!dev) {
-		await db.insert(table.session).values(session);
-	}
+	await db.insert(table.session).values(session);
 	return session;
 }
 
 export async function validateSessionToken(token: string) {
-	if (dev) {
-		// In development, return a mock user
-		return {
-			session: {
-				id: 'dev-session',
-				userId: 'dev-user',
-				expiresAt: new Date(Date.now() + DAY_IN_MS * 30)
-			},
-			user: {
-				id: 'dev-user',
-				githubId: 12345,
-				username: 'devuser',
-				avatar: 'https://github.com/avatar.png'
-			}
-		};
-	}
-
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	const [result] = await db
 		.select({
+			// Adjust user table here to tweak returned data
 			user: { id: table.user.id, githubId: table.user.githubId, username: table.user.username, avatar: table.user.avatar },
 			session: table.session, githubToken: table.session.githubToken
 		})
@@ -86,9 +69,7 @@ export async function validateSessionToken(token: string) {
 export type SessionValidationResult = Awaited<ReturnType<typeof validateSessionToken>>;
 
 export async function invalidateSession(sessionId: string) {
-	if (!dev) {
-		await db.delete(table.session).where(eq(table.session.id, sessionId));
-	}
+	await db.delete(table.session).where(eq(table.session.id, sessionId));
 }
 
 export function setSessionTokenCookie(event: RequestEvent, token: string, expiresAt: Date) {
