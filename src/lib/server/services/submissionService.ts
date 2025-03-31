@@ -7,17 +7,20 @@ export const createSubmission = async ({
   request_id,
   translator_id,
   pull_url,
-  status = 'on review'
+  provided_language,
+  status = 'on review',
 }: {
   request_id: string;
   translator_id: string;
   pull_url: string;
+  provided_language: string;
   status?: string;
 }) => {
   return await db.insert(schema.submission).values({
     request_id,
     translator_id,
     pull_url,
+    provided_language,
     status
   }).returning();
 };

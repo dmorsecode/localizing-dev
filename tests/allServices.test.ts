@@ -801,7 +801,8 @@ describe('Submission Service', () => {3
         const [submission] = await createSubmission({
             request_id: requestId,
             translator_id: translatorId,
-            pull_url: 'https://github.com/example/repo/pull/1'
+            pull_url: 'https://github.com/example/repo/pull/1',
+            provided_language: 'English'
         });
 
         expect(submission.request_id).toBe(requestId);
@@ -814,7 +815,8 @@ describe('Submission Service', () => {3
         const [created] = await createSubmission({
             request_id: requestId,
             translator_id: translatorId,
-            pull_url: 'https://github.com/example/repo/pull/2'
+            pull_url: 'https://github.com/example/repo/pull/2',
+            provided_language: 'Emu-Tongue'
         });
 
         const result = await getSubmissionById(created.s_id);
@@ -826,13 +828,15 @@ describe('Submission Service', () => {3
         await createSubmission({
             request_id: requestId,
             translator_id: translatorId,
-            pull_url: 'https://github.com/example/repo/pull/1'
+            pull_url: 'https://github.com/example/repo/pull/1',
+            provided_language: 'Russian'
         });
 
         await createSubmission({
             request_id: requestId,
             translator_id: translatorId,
-            pull_url: 'https://github.com/example/repo/pull/2'
+            pull_url: 'https://github.com/example/repo/pull/2',
+            provided_language: 'German'
         });
 
         const submissions = await getSubmissionsByRequestId(requestId);
@@ -843,13 +847,15 @@ describe('Submission Service', () => {3
         await createSubmission({
             request_id: requestId,
             translator_id: translatorId,
-            pull_url: 'https://github.com/example/repo/pull/1'
+            pull_url: 'https://github.com/example/repo/pull/1',
+            provided_language: 'French'
         });
 
         await createSubmission({
             request_id: requestId,
             translator_id: translatorId,
-            pull_url: 'https://github.com/example/repo/pull/2'
+            pull_url: 'https://github.com/example/repo/pull/2',
+            provided_language: 'Turkish'
         });
 
         const submissions = await getSubmissionsByTranslatorId(translatorId);
@@ -861,7 +867,7 @@ describe('Submission Service', () => {3
             request_id: requestId,
             translator_id: translatorId,
             pull_url: 'https://github.com/example/repo/pull/1',
-            status: 'on review'
+            status: 'on review',
         });
 
         const [updated] = await updateSubmission(created.s_id, {
