@@ -52,7 +52,7 @@
 				<Select.Trigger {...attrs}>
 					<Select.Value placeholder="Select a language" />
 				</Select.Trigger>
-				<Select.Content class="max-h-1/3 overflow-y-scroll">
+				<Select.Content class="max-h-1/2 overflow-y-scroll">
 					{#each LANGS as lang}
 						<Select.Item value={lang.code} label={lang.name} />
 					{/each}

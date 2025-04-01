@@ -16,8 +16,6 @@ import { fetchDiffData } from '$lib/server/github/apiServices';
 export async function load(event: RequestEvent) {
 	if (event.locals.user === null) return;
 
-	//const repos = await fetch(`https://api.github.com/users/${event.locals.user.username}/repos`);
-
 	const githubToken = event.locals.session?.githubToken;
 	if (!githubToken) throw error(401, 'Missing GitHub token');
 
@@ -56,6 +54,12 @@ export const actions: Actions = {
 };
 
 async function submitSubmission(event: RequestEvent) {
+	if (event.locals.user == null) {
+		return fail(401, {
+			message: "Unauthorized."
+		});
+	}
+
 	const form = await superValidate(event, zod(submissionFormSchema));
 	const url = new URL(form.data.url);
 
@@ -96,10 +100,19 @@ async function submitSubmission(event: RequestEvent) {
 	// 	});
 	// }
 
+	const diff = await fetchDiffData(url.pathname.substring(1), githubToken);
+	// Split diff by newlines, count the byte size of every line that starts with a +. Basic algorithm for how many leaderboard points the diff is worth.
+	const diffLines = diff.split("\n").filter(line => line.startsWith("+"));
+	const diffSize = Math.floor(diffLines.reduce((acc, line) => acc + new Blob([line]).size, 0) / 10); // Divided by 10 to combat point inflation.
+	console.log("Diff: ", diff);
+	console.log("Diff size: ", diffSize);
+
 	const submissionObject = {
 		translator_id: event.locals.user!.id,
 		request_id: request.r_id,
 		pull_url: form.data.url,
+		provided_language: form.data.providedLanguage,
+		earned_points: diffSize ?? 0,
 		status: isMerged ? "merged" : "on review",
 	}
 	await createSubmission(submissionObject);
@@ -108,11 +121,6 @@ async function submitSubmission(event: RequestEvent) {
 		form
 	};
 
-	const diff = await fetchDiffData(url.pathname.substring(1), githubToken);
-	// Split diff by newlines, count the byte size of every line that starts with a +. Basic algorithm for how many leaderboard points the diff is worth.
-	const diffLines = diff.split("\n").filter(line => line.startsWith("+"));
-	const diffSize = Math.floor(diffLines.reduce((acc, line) => acc + new Blob([line]).size, 0) / 10); // Divided by 10 to combat point inflation.
-
 	const onLeaderboard = await isUserIdOnLeaderboard(event.locals.user.id);
 
 	if (onLeaderboard) {
@@ -120,7 +128,7 @@ async function submitSubmission(event: RequestEvent) {
 	} else {
 		await createLeaderboardEntry(event.locals.user.id, diffSize)
 			.then(() => {
-				incrementLeaderboardScore(event.locals.user.id, diffSize);
+				incrementLeaderboardScore(event.locals.user!.id, diffSize);
 			});
 	}
 

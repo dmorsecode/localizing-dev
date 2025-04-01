@@ -23,9 +23,11 @@
 		additions: number,
 		deletions: number,
 		commits: number,
+		language: string,
 		points: number,
 		pull_url: string,
 		status: string,
+		diffSize: number,
 		mergedAt: Date | null,
 	}
 
@@ -39,26 +41,30 @@
 		additions: 0,
 		deletions: 0,
 		commits: 0,
+		language: "",
 		points: 0,
 		pull_url: "",
 		status: "",
+		diffSize: 0,
 		mergedAt: new Date(),
 	};
 
 	onMount(async () => {
 		const apiEndpoint = repo.pull_url.split('.com/')[1];
 		const pullData = await fetch(`/api/github/pull?path=${apiEndpoint}`);
-		const diffData = await fetch(`/api/github/diff?path=${apiEndpoint}`);
-
 		const pull = await pullData.json();
+
+		const diffData = await fetch(`/api/github/diff?path=${apiEndpoint}`);
 		const diff = await diffData.json();
+		const diffSize = new Blob([diff]).size;
 
 		const reqData = await fetch(`/api/db/request?path=${pull.base?.repo.html_url}`);
 		const req = await reqData.json();
 
-		// Split diff by newlines, count the byte size of every line that starts with a +. Basic algorithm for how many leaderboard points the diff is worth.
-		const diffLines = diff.split("\n").filter(line => line.startsWith("+"));
-		const diffSize = Math.floor(diffLines.reduce((acc, line) => acc + new Blob([line]).size, 0) / 10); // Divided by 10 to combat point inflation.
+		const subData = await fetch(`/api/db/submission?path=${repo.pull_url}`);
+		const sub = await subData.json();
+
+		console.log(sub);
 
 		submissionData = {
 			name: pull.base?.repo.name,
@@ -70,9 +76,11 @@
 			additions: pull.additions,
 			deletions: pull.deletions,
 			commits: pull.commits,
-			points: diffSize,
-			pull_url: pull.html_url,
+			language: sub.provided_language,
+			points: sub.earned_points,
+			pull_url: repo.pull_url,
 			status: pull.merged ? "merged" : "on review",
+			diffSize: parseFloat((diffSize / 1024).toFixed(1)),
 			mergedAt: pull.merged_at ? new Date(pull.merged_at) : null,
 		}
 	});
@@ -101,27 +109,27 @@
 			<Table.Root class="text-sm">
 				<Table.Body>
 					<Table.Row>
+						<Table.Cell class="px-2 align-top font-semibold">
+							<p>Localization</p>
+						</Table.Cell>
+						<Table.Cell class="px-0">
+							<p>{LANGS.find((l) => l.code === submissionData.language)?.name}</p>
+						</Table.Cell>
+					</Table.Row>
+					<Table.Row>
 						<Table.Cell class="px-2 align-top">
-							Additions
+							<p>Additions</p>
 						</Table.Cell>
 						<Table.Cell class="px-0 text-left">
-							{submissionData.additions}
+							<p>{submissionData.additions}</p>
 						</Table.Cell>
 					</Table.Row>
 					<Table.Row>
 						<Table.Cell class="px-2 align-top">
-							Deletions
+							<p>PR Size</p>
 						</Table.Cell>
 						<Table.Cell class="px-0">
-							{submissionData.deletions}
-						</Table.Cell>
-					</Table.Row>
-					<Table.Row>
-						<Table.Cell class="px-2 align-top">
-							Commits
-						</Table.Cell>
-						<Table.Cell class="px-0">
-							{submissionData.commits}
+							<p>{submissionData.diffSize} <small>Kb</small></p>
 						</Table.Cell>
 					</Table.Row>
 				</Table.Body>
