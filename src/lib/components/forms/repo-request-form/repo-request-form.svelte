@@ -9,7 +9,7 @@
 	import * as Select from '$lib/components/ui/select';
 	import Plus from "svelte-radix/PlusCircled.svelte";
 	import Spinner from '$lib/components/ui/spinner/spinner.svelte';
-	import { formSchema, type FormSchema } from './schema';
+	import { requestFormSchema, type FormSchema } from './schema';
 	import {
 		type SuperValidated,
 		type Infer,
@@ -24,7 +24,7 @@
 
 	const form = superForm(data, {
 		dataType: 'json',
-		validators: zodClient(formSchema),
+		validators: zodClient(requestFormSchema),
 		onResult: ({ result }) => {
 			if (result.type === 'success') {
 				modalClose();
@@ -60,7 +60,7 @@
 </script>
 
 <h1 class="font-bold text-2xl mb-8">Submit a Repository for Localization</h1>
-<form method="POST" use:enhance class="flex flex-col gap-4">
+<form method="POST" action="?/request" use:enhance class="flex flex-col gap-4">
 	<Form.Field {form} name="url">
 		<Form.Control let:attrs>
 			<Form.Label class="font-semibold">Repository</Form.Label>

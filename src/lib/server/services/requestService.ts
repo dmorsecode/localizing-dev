@@ -162,6 +162,76 @@ export const getRequestById = async (r_id: string) => {
 	return return_request;
 };
 
+//Get Request By Id
+export const getRequestByRepoUrl = async (repo_url: string) => {
+
+	const rows = await db
+		.select({
+			r_id: schema.requests.r_id,
+			repo_url: schema.requests.repo_url,
+			requestor_id: schema.requests.requestor_id,
+			status: schema.requests.status,
+			description: schema.requests.description,
+			current_languages: {
+				request_id: schema.cur_languages.request_id,
+				language: schema.cur_languages.language
+			},
+			requested_languages: {
+				request_id: schema.languages.request_id,
+				language: schema.languages.language
+			},
+			tags: {
+				request_id: schema.tags.request_id,
+				tag: schema.tags.tag
+			}
+		})
+		.from(schema.requests)
+		.leftJoin(schema.tags, eq(schema.requests.r_id, schema.tags.request_id))
+		.leftJoin(schema.languages, eq(schema.requests.r_id, schema.languages.request_id))
+		.leftJoin(schema.cur_languages, eq(schema.requests.r_id, schema.cur_languages.request_id))
+		.where(eq(schema.requests.repo_url, repo_url));
+
+	//return null if no rows found
+	if (rows.length === 0) return null;
+
+	const return_request: RequestWithLanguageAndTags = {
+		r_id: rows[0].r_id,
+		repo_url: rows[0].repo_url,
+		requestor_id: rows[0].requestor_id,
+		status: rows[0].status,
+		description: rows[0].description,
+		current_languages: [],
+		requested_languages: [],
+		tags: []
+	};
+
+	return_request.requested_languages = [
+		...new Set(
+			rows
+				.map((row) => row.requested_languages?.language)
+				.filter((language): language is string => language !== null && language !== undefined)
+		)
+	];
+
+	return_request.current_languages = [
+		...new Set(
+			rows
+				.map((row) => row.current_languages?.language)
+				.filter((language): language is string => language !== null && language !== undefined)
+		)
+	];
+
+	return_request.tags = [
+		...new Set(
+			rows
+				.map((row) => row.tags?.tag)
+				.filter((tag): tag is string => tag !== null && tag !== undefined)
+		)
+	];
+
+	return return_request;
+};
+
 //Get All Requests by userId
 export const getRequestsByUser = async (userId: string) => {
 

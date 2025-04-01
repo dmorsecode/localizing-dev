@@ -2,16 +2,17 @@
 	import * as Card from '$lib/components/ui/card';
 	import Plus from 'svelte-radix/Plus.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import RepoAddForm from '$lib/components/forms/repo-submission-form/repo-submission-form.svelte';
+	import RepoRequestForm from '$lib/components/forms/repo-request-form/repo-request-form.svelte';
+	import SubmissionForm from '$lib/components/forms/submission-form/submission-form.svelte';
 
 	export let userRepos;
 	export let form;
+	export let type;
 
 	$: isOpen = false;
 
 	function modalClose() {
 		isOpen = false;
-		console.log("closed");
 	}
 </script>
 
@@ -23,7 +24,11 @@
 				<Plus size="128" color="#00000022" />
 			</Dialog.Trigger>
 			<Dialog.Content>
-				<RepoAddForm data={form} repos={userRepos} {modalClose} />
+				{#if type === "request"}
+					<RepoRequestForm data={form} repos={userRepos} {modalClose} />
+				{:else if type === "submission"}
+					<SubmissionForm data={form} {modalClose} />
+				{/if}
 			</Dialog.Content>
 		</Dialog.Root>
 	</Card.Content>
