@@ -63,8 +63,10 @@ export const submission = pgTable('submission', {
 	request_id: text('request_id').notNull().references(() => requests.r_id),
 	translator_id: text('translator_id').notNull().references(() => user.id),
 	pull_url: text('pull_url'),
+	provided_language: text('provided_language'),
 	submitted_at: timestamp('submitted_at', { withTimezone: true}).defaultNow(),
-	status: text('status').default('on review')
+	status: text('status').default('on review'),
+	earned_points: integer('earned_points').default(0)
 });
 
 export const reviews = pgTable('reviews', {

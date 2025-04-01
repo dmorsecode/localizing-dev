@@ -59,8 +59,10 @@ CREATE TABLE IF NOT EXISTS "submission" (
 	request_id text NOT NULL REFERENCES "requests" (r_id),
 	translator_id text NOT NULL REFERENCES "user" (id),
 	pull_url text,
+	provided_language text,
 	submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-	status text DEFAULT 'on review'::text
+	status text DEFAULT 'on review'::text,
+	earned_points integer DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS "reviews" (
 	rv_id text PRIMARY KEY,
