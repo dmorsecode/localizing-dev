@@ -87,6 +87,13 @@ export const notifications = pgTable('notifications', {
 	created_at: timestamp('created_at', { withTimezone: true}).defaultNow()
 });
 
+export const bookmarks = pgTable('bookmarks', {
+	user_id: text('user_id').notNull().references(() => user.id),
+	request_id: text('request_id').notNull().references(() => requests.r_id),
+}, (table) => ({
+	pk: primaryKey({ columns: [table.user_id, table.request_id]})
+}));
+
 // Exporting inferred types
 export type Session = typeof session.$inferSelect;
 export type User = typeof user.$inferSelect;
@@ -98,3 +105,4 @@ export type Notifications = typeof notifications.$inferSelect;
 export type Languages = typeof languages.$inferSelect;
 export type Tags = typeof tags.$inferSelect;
 export type Cur_Languages = typeof cur_languages.$inferSelect;
+export type Bookmarks = typeof bookmarks.$inferSelect;

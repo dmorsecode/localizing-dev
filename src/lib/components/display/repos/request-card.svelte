@@ -6,13 +6,23 @@
 	import { Button } from '$lib/components/ui/button';
 	import { GitPullRequest } from 'lucide-svelte';
 	import { GitFork } from 'lucide-svelte';
+	import { Bookmark } from 'lucide-svelte';
 	import { LANGS } from '$lib/i18n';
 	import RepoSkeleton from '$lib/components/display/repos/repo-skeleton.svelte';
+	import Spinner from '$lib/components/ui/spinner/spinner.svelte';
 	import { onMount } from 'svelte';
 
 
-	export let repo;
+	export let repo: {
+		repo_url: string;
+		r_id: string;
+		current_languages: string[];
+		requested_languages: string[];
+		description: string;
+	};
 	export let dashboard = false;
+	export let bookmarks: string[] = [];
+	export let bookmark = false;
 
 	// define repo interface
 	interface RepoData {
@@ -26,6 +36,7 @@
 		license: {
 			name: string;
 		};
+		bookmarked?: boolean;
 	}
 
 	let repoData : RepoData = {
@@ -39,6 +50,7 @@
 		license: {
 			name: ""
 		},
+		bookmarked: false
 	};
 	// (async () => {
 	// 	// our repo.repo_url is the full url. we want everything after the .com
@@ -51,7 +63,59 @@
 		const apiEndpoint = repo.repo_url.split('.com/')[1];
 		const res = await fetch(`/api/github/repo?path=${apiEndpoint}`);
 		repoData = await res.json();
+		repoData.bookmarked = bookmarks?.find((b) => b === repo.r_id) !== undefined;
+		if (bookmark) {
+			repoData.bookmarked = true;
+		}
 	});
+
+	function toggleBookmark(): void {
+		if (repoData.bookmarked === undefined) return;
+		if (repoData.bookmarked == true) {
+			repoData.bookmarked = undefined;
+			removeBookmark();
+		} else {
+			repoData.bookmarked = undefined;
+			bookmarkRepo();
+		}
+	};
+
+	function removeBookmark() {
+		fetch('/api/db/bookmarks', {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				request_id: repo.r_id
+			})
+		}).then((res) => {
+			if (res.ok) {
+				repoData.bookmarked = false;
+			} else {
+				console.error("Error removing bookmark: ", res.statusText);
+			}
+		});
+	}
+
+	function bookmarkRepo() {
+		// add bookmark to database
+		fetch('/api/db/bookmarks', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				request_id: repo.r_id
+			})
+		}).then((res) => {
+			if (res.ok) {
+				repoData.bookmarked = true;
+			} else {
+				console.error("Error adding bookmark: ", res.statusText);
+			}
+		});
+	}
 </script>
 
 {#if repoData.html_url === ""}
@@ -59,18 +123,23 @@
 {:else}
 	<Card.Root
 		class="min-h-80 flex flex-col shadow-sm border-gray-600/15 text-sm grow basis-1/3 max-w-[calc(50%-1rem)] md:basis-1/4 md:max-w-[calc(33%-1rem)] lg:basis-1/5 lg:max-w-[calc(25%-1rem)]">
-		<a href="{repoData.html_url}" target="_blank" rel="noopener noreferrer">
+		<div class="flex justify-between items-start gap-2">
 			<Card.Header class="p-2 pb-0 flex flex-row items-start gap-2">
 				<Avatar.Root>
 					<Avatar.Image src="{repoData.owner.avatar_url}" alt="{repoData.owner.login}" />
 					<Avatar.Fallback>{repoData.owner.login[0]}</Avatar.Fallback>
 				</Avatar.Root>
 				<div>
-					<Card.Title>{repoData.name}</Card.Title>
-					<Card.Description>{repoData.owner.login}</Card.Description>
+					<Card.Title><a href="{repoData.html_url}" target="_blank" rel="noopener noreferrer">{repoData.name}</a></Card.Title>
+					<Card.Description><a href="{repoData.html_url}" target="_blank" rel="noopener noreferrer">{repoData.owner.login}</a></Card.Description>
 				</div>
 			</Card.Header>
-		</a>
+			{#if !dashboard || bookmark}
+				<Button variant="ghost" class="p-0 m-0 rounded-none rounded-bl-[25%] cursor-pointer active:scale-[105%] transition-transform duration-200" on:click={toggleBookmark}>
+					<Bookmark size={24} strokeWidth={1} class={`m-2 transition-opacity ${repoData.bookmarked === undefined ? "opacity-20" : ""}`} color={`${repoData.bookmarked === true ? "oklch(68.1% 0.162 75.834)" : "oklch(20.5% 0 0)"}`} fill={`${repoData.bookmarked === true ? "oklch(85.2% 0.199 91.936)" : "#FFFFFFFF"}`} />
+				</Button>
+			{/if}
+		</div>
 		<Card.Content class="p-3 pt-0 grow">
 			<p class="h-12">{repo.description ?? repoData.description ?? "No description available."}</p>
 			<br />
@@ -101,7 +170,7 @@
 		<Card.Footer class="p-2 flex justify-between gap-2">
 			<p
 				class={`${repoData.license == null ? "italic text-primary/60" : ""} grow`}>{repoData.license?.name ?? "No license."}</p>
-			{#if !dashboard}
+			{#if !dashboard || bookmark}
 				<Button href={`${repoData.html_url + "/fork"}`} target="_blank" rel="noopener noreferrer" variant="outline">
 					<GitFork size={16} class="mr-2" />
 					Contribute

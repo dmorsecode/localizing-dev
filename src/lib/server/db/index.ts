@@ -80,4 +80,9 @@ CREATE TABLE IF NOT EXISTS "notifications" (
 	is_read INTEGER DEFAULT 0,
 	created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+CREATE TABLE IF NOT EXISTS "bookmarks" (
+	user_id text NOT NULL REFERENCES "user" (id),
+	request_id text NOT NULL REFERENCES "requests" (r_id),
+	PRIMARY KEY (user_id, request_id)
+);
 `);

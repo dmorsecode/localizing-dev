@@ -64,8 +64,6 @@
 		const subData = await fetch(`/api/db/submission?path=${repo.pull_url}`);
 		const sub = await subData.json();
 
-		console.log(sub);
-
 		submissionData = {
 			name: pull.base?.repo.name,
 			owner: {

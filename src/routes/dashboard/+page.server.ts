@@ -7,6 +7,7 @@ import { zod } from "sveltekit-superforms/adapters";
 import { addRequestedLanguageToRequest } from '$lib/server/services/languageService';
 import { addCurrentLanguageToRequest } from '$lib/server/services/curr_languageService';
 import { createRequest, getRequestsByUser, getRequestByRepoUrl } from '$lib/server/services/requestService';
+import { getBookmarksForUser } from '$lib/server/services/bookmarkService';
 import { addTagsToRequest } from '$lib/server/services/tagService';
 import { getSubmissionsByTranslatorId, createSubmission } from '$lib/server/services/submissionService';
 import { isUserIdOnLeaderboard, createLeaderboardEntry, incrementLeaderboardScore, getLeaderboardEntryByUserId } from '$lib/server/services/leaderboardService';
@@ -36,6 +37,7 @@ export async function load(event: RequestEvent) {
 
 	const requests = await getRequestsByUser(event.locals.user.id);
 	const submissions = await getSubmissionsByTranslatorId(event.locals.user.id);
+	const bookmarks = await getBookmarksForUser(event.locals.user.id, true);
 	const leaderboardScore = await getLeaderboardEntryByUserId(event.locals.user.id);
 
 	return {
@@ -43,6 +45,7 @@ export async function load(event: RequestEvent) {
 		submissionForm: await superValidate(zod(submissionFormSchema)),
 		requests: await requests,
 		submissions: await submissions,
+		bookmarks: await bookmarks,
 		repos: await repos,
 		leaderboardScore: await leaderboardScore
 	};

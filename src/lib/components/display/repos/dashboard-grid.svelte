@@ -6,17 +6,20 @@
 	export let form;
 	export let userRepos;
 	export let reposToDisplay;
+	export let bookmarks = false;
 
-	let type = form.data.providedLanguage != null ? "submission" : "request";
+	let type = form?.data.providedLanguage != null ? "submission" : "request";
 </script>
 
 <div class="flex flex-wrap gap-4">
 	{#each reposToDisplay as repo}
 		{#if type === "request"}
-			<RequestCard {repo} dashboard={true} />
+			<RequestCard {repo} dashboard={true} bookmark={bookmarks} />
 		{:else}
 			<SubmissionCard {repo} dashboard={true} />
 		{/if}
 	{/each}
-	<RepoAdd {userRepos} {form} {type} />
+	{#if !bookmarks}
+		<RepoAdd {userRepos} {form} {type} />
+	{/if}
 </div>
