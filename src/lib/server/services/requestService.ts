@@ -1,6 +1,7 @@
-import { eq, inArray } from 'drizzle-orm';
+import { eq, count, and, inArray } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import * as schema from '$lib/server/db/schema';
+import * as serviceTypes from './serviceTypes';
 
 //Create Request
 export const createRequest = async ({
@@ -20,15 +21,57 @@ export const createRequest = async ({
 			requestor_id,
 			repo_url,
 			status: status ?? 'open',
-			description: description ?? null,
+			description: description ?? null
 		})
 		.returning();
 };
 
 // Get all requests
-export const getAllRequests = async () => {
+export const getAllRequests = async (options: serviceTypes.GetRepositoriesOptions = {}) => {
+	//defaults for inputs
+	const {
+		page = 1,
+		perPage = 10,
+		originalLanguage,
+		requestedLanguage,
+		minKb,
+		maxKb,
+		licenseType,
+		tags
+	} = options;
 
-	const rows = await db
+	const offset = (page - 1) * perPage;
+
+	//chain conditions
+	const conditions = [];
+
+	if (originalLanguage) {
+		conditions.push(eq(schema.cur_languages.language, originalLanguage));
+	}
+
+	if (requestedLanguage) {
+		conditions.push(eq(schema.languages.language, requestedLanguage));
+	}
+
+	// if (minKb) {
+	// 	conditions.push(gte(schema.requests.kb_size, parseInt(minKb)));
+	// }
+
+	// if (maxKb) {
+	// 	conditions.push(lte(schema.requests.kb_size, parseInt(maxKb)));
+	// }
+
+	// if (licenseType) {
+	// 	conditions.push(eq(schema.requests.license, licenseType));
+	// }
+
+	// if (tags?.length) {
+	// 	conditions.push(inArray(schema.tags.tag, tags));
+	// }
+
+	const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+	const query = db
 		.select({
 			r_id: schema.requests.r_id,
 			repo_url: schema.requests.repo_url,
@@ -52,6 +95,16 @@ export const getAllRequests = async () => {
 		.leftJoin(schema.tags, eq(schema.requests.r_id, schema.tags.request_id))
 		.leftJoin(schema.cur_languages, eq(schema.requests.r_id, schema.cur_languages.request_id))
 		.leftJoin(schema.languages, eq(schema.requests.r_id, schema.languages.request_id))
+		.limit(perPage)
+		.offset(offset);
+
+	//append where clause
+	if (whereClause) {
+		query.where(whereClause);
+	}
+
+	//run query
+	const rows = await query;
 
 	//return null if no rows found
 	if (rows.length === 0) return null;
@@ -89,12 +142,19 @@ export const getAllRequests = async () => {
 		}
 	}
 
-	return Object.values(return_request);
+	const total = await db.select({ count: count() }).from(schema.requests);
+	const totalPages = Math.ceil(total[0].count / perPage);
+
+	return {
+		data: Object.values(return_request),
+		page,
+		perPage,
+		totalPages
+	};
 };
 
 //Get Request By Id
 export const getRequestById = async (r_id: string) => {
-
 	const rows = await db
 		.select({
 			r_id: schema.requests.r_id,
@@ -121,7 +181,7 @@ export const getRequestById = async (r_id: string) => {
 		.leftJoin(schema.languages, eq(schema.requests.r_id, schema.languages.request_id))
 		.where(eq(schema.requests.r_id, r_id));
 
-		//return null if no rows found
+	//return null if no rows found
 	if (rows.length === 0) return null;
 
 	const return_request: RequestWithLanguageAndTags = {
@@ -302,7 +362,6 @@ export const getRequestsFromList = async (requestIds: string[]) => {
 
 //Get All Requests by userId
 export const getRequestsByUser = async (userId: string) => {
-
 	const rows = await db
 		.select({
 			r_id: schema.requests.r_id,
@@ -329,43 +388,43 @@ export const getRequestsByUser = async (userId: string) => {
 		.leftJoin(schema.languages, eq(schema.requests.r_id, schema.languages.request_id))
 		.where(eq(schema.requests.requestor_id, userId));
 
-		//return null if no rows found
-		if (rows.length === 0) return null;
+	//return null if no rows found
+	if (rows.length === 0) return null;
 
-		// Group by request id
-		const return_request: Record<string, RequestWithLanguageAndTags> = {};
+	// Group by request id
+	const return_request: Record<string, RequestWithLanguageAndTags> = {};
 
-		for (const row of rows) {
-			if (!return_request[row.r_id]) {
-				return_request[row.r_id] = {
-					r_id: row.r_id,
-					repo_url: row.repo_url,
-					requestor_id: row.requestor_id,
-					status: row.status ?? 'open',
-					description: row.description,
-					tags: [],
-					current_languages: [],
-					requested_languages: []
-				};
-			}
-			if (row.tags?.tag && !return_request[row.r_id].tags.includes(row.tags.tag)) {
-				return_request[row.r_id].tags.push(row.tags.tag);
-			}
-			if (
-				row.requested_languages?.language &&
-				!return_request[row.r_id].requested_languages.includes(row.requested_languages.language)
-			) {
-				return_request[row.r_id].requested_languages.push(row.requested_languages.language);
-			}
-			if (
-				row.current_languages?.language &&
-				!return_request[row.r_id].current_languages.includes(row.current_languages.language)
-			) {
-				return_request[row.r_id].current_languages.push(row.current_languages.language);
-			}
+	for (const row of rows) {
+		if (!return_request[row.r_id]) {
+			return_request[row.r_id] = {
+				r_id: row.r_id,
+				repo_url: row.repo_url,
+				requestor_id: row.requestor_id,
+				status: row.status ?? 'open',
+				description: row.description,
+				tags: [],
+				current_languages: [],
+				requested_languages: []
+			};
 		}
+		if (row.tags?.tag && !return_request[row.r_id].tags.includes(row.tags.tag)) {
+			return_request[row.r_id].tags.push(row.tags.tag);
+		}
+		if (
+			row.requested_languages?.language &&
+			!return_request[row.r_id].requested_languages.includes(row.requested_languages.language)
+		) {
+			return_request[row.r_id].requested_languages.push(row.requested_languages.language);
+		}
+		if (
+			row.current_languages?.language &&
+			!return_request[row.r_id].current_languages.includes(row.current_languages.language)
+		) {
+			return_request[row.r_id].current_languages.push(row.current_languages.language);
+		}
+	}
 
-		return Object.values(return_request);
+	return Object.values(return_request);
 };
 
 //Update a request
