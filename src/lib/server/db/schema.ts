@@ -33,6 +33,9 @@ export const requests = pgTable('requests', {
 	repo_url: text('repo_url').notNull(),
 	status: text('status').default('open'),
 	description: text('description'),
+	kb_size: integer('kb_size'),
+	star_size: integer('star_size'),
+	license: text('license'),
 	created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow(),
 	expires_at: timestamp('expires_at', { withTimezone: true})
 });

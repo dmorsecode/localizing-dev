@@ -3,6 +3,8 @@ export type GetRepositoriesOptions = {
     requestedLanguage?: string;
     minKb?: string;
     maxKb?: string;
+    minStar?: string;
+    maxStar?: string;
     licenseType?: string;
     tags?: string[];
     page?: number;

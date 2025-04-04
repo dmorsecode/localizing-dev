@@ -36,6 +36,9 @@ CREATE TABLE IF NOT EXISTS "requests" (
 	repo_URL text NOT NULL,
 	status text DEFAULT 'open',
 	description text,
+	kb_size integer,
+	star_size integer,
+	license text,
 	created_at timestamp DEFAULT now(),
 	expires_at timestamp DEFAULT (now() + '60 days'::interval)
 );
