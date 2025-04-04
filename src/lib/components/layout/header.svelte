@@ -1,22 +1,22 @@
 <script lang="ts">
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import logo from '$lib/components/ui/pictures/logo.png';
+	import logo from '$lib/components/ui/pictures/logo-notext.png';
 
 	export let user;
 </script>
 
-<header class="w-full flex justify-between items-center p-4 border-b bg-cyan-300">
-	<div class="flex gap-2 place-items-center ml-4">
-		<a href="/" class="flex items-center">
-			<img src={logo} alt="localizing.dev" class="h-24 w-auto" />
+<header class="w-full h-12 flex justify-between items-center p-4 py-8 border-b bg-cyan-300">
+	<div class="h-12">
+		<a href="/" class="flex items-center h-12">
+			<img src={logo} alt="localizing.dev" class="h-12 p-0 m-0 w-auto" />
 		</a>
 	</div>
 	<div class="flex gap-6 place-items-center uppercase mr-4">
-		<a href="/faq" class="text-sm font-semibold">FAQ</a>
-		<a href="https://github.com/dmorsecode/localizing-dev" target="_blank" rel="noopener noreferrer" class="text-sm font-semibold">About Us</a>
-		<a href="/leaderboard" class="text-sm font-semibold">Leaderboard</a>
-		<a href="/repositories" class="text-sm font-semibold">Repositories</a>
+		<a href="/faq" class="text-lg font-semibold">FAQ</a>
+		<a href="https://github.com/dmorsecode/localizing-dev" target="_blank" rel="noopener noreferrer" class="text-lg font-semibold">About Us</a>
+		<a href="/leaderboard" class="text-lg font-semibold">Leaderboard</a>
+		<a href="/repositories" class="text-lg font-semibold">Repositories</a>
 		{#if user}
 			<DropdownMenu.Root preventScroll={false}>
 				<DropdownMenu.Trigger class="cursor-pointer">
@@ -41,7 +41,7 @@
 		{:else}
 			<a 
 				href="/login/github" 
-				class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 text-sm font-semibold"
+				class="px-4 py-2 bg-cyan-900 text-white rounded-md hover:bg-cyan-700 transition-colors duration-200 text-sm font-semibold"
 			>
 				Sign In with Github
 			</a>

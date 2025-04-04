@@ -9,7 +9,7 @@
 </script>
 
 <!-- Section 1: Banner -->
-<section class="w-full bg-cyan-100 py-16">
+<section class="w-full bg-cyan-100 py-16 rounded-md">
   <div class="container mx-auto px-4 flex items-center justify-between">
     <div class="max-w-2xl">
       <h1 class="text-5xl font-bold mb-6 leading-tight">

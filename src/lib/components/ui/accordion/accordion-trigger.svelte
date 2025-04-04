@@ -10,7 +10,7 @@
 
 <button
   class={cn(
-    "flex flex-1 items-center justify-between py-4 px-4 font-medium transition-all hover:bg-blue-50 rounded-t-lg",
+    "flex flex-1 w-full items-center justify-between py-4 px-4 font-medium transition-all hover:bg-blue-50 rounded-t-lg",
     openItems[value] ? "bg-blue-50" : "bg-white",
     className
   )}

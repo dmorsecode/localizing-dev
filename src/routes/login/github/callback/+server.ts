@@ -37,7 +37,7 @@ export async function GET(event: RequestEvent): Promise<Response> {
 
 	const githubUser = await githubUserResponse.json();
 	const githubUserId = githubUser.id;
-	const githubEmail = githubUser.email.toLowerCase() ?? null;
+	const githubEmail = githubUser.email?.toLowerCase() ?? null;
 	const githubUsername = githubUser.login.toLowerCase();
 	const githubAvatar = githubUser.avatar_url;
 

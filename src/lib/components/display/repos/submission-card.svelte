@@ -11,7 +11,6 @@
 	import { onMount } from 'svelte';
 
 	export let repo;
-	export const dashboard = false;
 
 	interface SubmissionData {
 		name: string,
