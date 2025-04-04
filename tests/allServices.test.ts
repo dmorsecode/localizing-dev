@@ -166,7 +166,10 @@ describe('Leaderboard Service', () => {
 
         const leaderboard = await getFullLeaderboard();
         expect(leaderboard).toHaveLength(2);
-        expect(leaderboard[0].l_score!).toBeGreaterThanOrEqual(leaderboard[1].l_score!);
+        expect(leaderboard[0].leaderboard.l_score).not.toBeNull();
+        expect(leaderboard[1].leaderboard.l_score).not.toBeNull();
+
+        expect(leaderboard[0].leaderboard.l_score!).toBeGreaterThanOrEqual(leaderboard[1].leaderboard.l_score!);
     });
 
     it('should update a user leaderboard score', async () => {
