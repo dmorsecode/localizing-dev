@@ -5,7 +5,7 @@
   const dispatch = createEventDispatcher();
 
   export let className: string = "";
-  export let value: string | undefined = undefined;
+  export const value: string | undefined = undefined;
   export let type: "single" | "multiple" = "single";
   export let collapsible: boolean = true;
 

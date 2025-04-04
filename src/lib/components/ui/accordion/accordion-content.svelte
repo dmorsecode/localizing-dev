@@ -1,7 +1,7 @@
 <script lang="ts">
   import { cn } from "$lib/utils";
 
-  export let className: string = "";
+  export const className: string = "";
   export let value: string;
   export let openItems: Record<string, boolean> = {};
 </script>
