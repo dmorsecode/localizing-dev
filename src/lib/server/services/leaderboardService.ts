@@ -40,6 +40,7 @@ export const getFullLeaderboard = async () => {
     .select()
     .from(schema.leaderboard)
     .where(eq(schema.leaderboard.is_active, true))
+    .innerJoin(schema.user, eq(schema.leaderboard.user_id, schema.user.id))
     .orderBy(desc(schema.leaderboard.l_score));
 };
 

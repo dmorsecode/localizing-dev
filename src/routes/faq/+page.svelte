@@ -63,7 +63,7 @@
     {#each filteredItems as item}
       <AccordionItem value={item.id} {openItems} handleItemClick={toggleItem}>
         <AccordionTrigger value={item.id} {openItems} handleItemClick={toggleItem}>
-          <div class="w-full grow">{item.question}</div>
+          {item.question}
         </AccordionTrigger>
         <AccordionContent value={item.id} {openItems}>
           {item.answer}
