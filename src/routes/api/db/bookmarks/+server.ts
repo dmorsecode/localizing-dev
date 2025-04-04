@@ -3,6 +3,8 @@ import { createBookmark, deleteBookmark, getBookmarksForUser } from '$lib/server
 import type { RequestEvent } from '@sveltejs/kit';
 
 export async function GET({ locals } : RequestEvent) {
+	// return empty json object if user is not logged in
+	if (locals.user === null || locals.user === undefined) return json([], { status: 200 });
 	if (!locals.user?.id) return new Response('Unauthorized', { status: 401 });
 
 	try {
@@ -17,7 +19,6 @@ export async function GET({ locals } : RequestEvent) {
 
 export async function POST({ locals, request } : RequestEvent) {
 	const { request_id } = await request.json();
-	console.log(`Request ID: ${request_id}`);
 
 	if (!request_id) return new Response('Missing request_id', { status: 400 });
 	if (!locals.user?.id) return new Response('Unauthorized', { status: 401 });
@@ -34,7 +35,6 @@ export async function POST({ locals, request } : RequestEvent) {
 
 export async function DELETE({ locals, request } : RequestEvent) {
 	const { request_id } = await request.json();
-	console.log(`Request ID: ${request_id}`);
 
 	if (!request_id) return new Response('Missing request_id', { status: 400 });
 	if (!locals.user?.id) return new Response('Unauthorized', { status: 401 });

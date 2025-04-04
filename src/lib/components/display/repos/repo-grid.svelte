@@ -24,7 +24,7 @@
 </script>
 
 <div class="flex flex-wrap gap-4">
-	{#if reposToDisplay?.length === 0 && !dashboard}
+	{#if (reposToDisplay === null || reposToDisplay?.length === 0) && !dashboard}
 		<p class="text-center text-muted-foreground">No repositories found.</p>
 	{/if}
 	{#each reposToDisplay as repo}

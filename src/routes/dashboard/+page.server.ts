@@ -107,8 +107,6 @@ async function submitSubmission(event: RequestEvent) {
 	// Split diff by newlines, count the byte size of every line that starts with a +. Basic algorithm for how many leaderboard points the diff is worth.
 	const diffLines = diff.split("\n").filter(line => line.startsWith("+"));
 	const diffSize = Math.floor(diffLines.reduce((acc, line) => acc + new Blob([line]).size, 0) / 10); // Divided by 10 to combat point inflation.
-	console.log("Diff: ", diff);
-	console.log("Diff size: ", diffSize);
 
 	const submissionObject = {
 		translator_id: event.locals.user!.id,
@@ -143,7 +141,7 @@ async function submitSubmission(event: RequestEvent) {
 async function addRepo(event: RequestEvent) {
 	const form = await superValidate(event, zod(requestFormSchema));
 	const url = new URL(form.data.url);
-	if (url.hostname !== 'github.com' || url.pathname.split('/')[1] !== event.locals.user?.username) {
+	if (url.hostname !== 'github.com' || url.pathname.split('/')[1].toLowerCase() !== event.locals.user?.username.toLowerCase()) {
 		return fail(400, {
 			form
 		});
