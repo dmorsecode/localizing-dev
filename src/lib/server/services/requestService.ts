@@ -1,4 +1,4 @@
-import { eq, count, and, inArray } from 'drizzle-orm';
+import { eq, count, and, inArray, gte, lte } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import * as schema from '$lib/server/db/schema';
 import * as serviceTypes from './serviceTypes';
@@ -36,6 +36,8 @@ export const getAllRequests = async (options: serviceTypes.GetRepositoriesOption
 		requestedLanguage,
 		minKb,
 		maxKb,
+		minStar,
+		maxStar,
 		licenseType,
 		tags
 	} = options;
@@ -53,21 +55,31 @@ export const getAllRequests = async (options: serviceTypes.GetRepositoriesOption
 		conditions.push(eq(schema.languages.language, requestedLanguage));
 	}
 
-	// if (minKb) {
-	// 	conditions.push(gte(schema.requests.kb_size, parseInt(minKb)));
-	// }
+	 if (minKb) {
+	 	conditions.push(gte(schema.requests.kb_size, parseInt(minKb)));
+	 }
 
-	// if (maxKb) {
-	// 	conditions.push(lte(schema.requests.kb_size, parseInt(maxKb)));
-	// }
+	if (maxKb) {
+		conditions.push(lte(schema.requests.kb_size, parseInt(maxKb)));
+	 }
 
-	// if (licenseType) {
-	// 	conditions.push(eq(schema.requests.license, licenseType));
-	// }
+	if (minStar)
+	{
+		conditions.push(gte(schema.requests.star_size, parseInt(minStar)));
+	}
 
-	// if (tags?.length) {
-	// 	conditions.push(inArray(schema.tags.tag, tags));
-	// }
+	if (maxStar)
+	{
+		conditions.push(lte(schema.requests.star_size, parseInt(maxStar)));
+	}
+
+	if (licenseType) {
+	 	conditions.push(eq(schema.requests.license, licenseType));
+	 }
+
+	if (tags?.length) {
+		conditions.push(inArray(schema.tags.tag, tags));
+	}
 
 	const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
