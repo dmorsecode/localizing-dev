@@ -53,7 +53,6 @@ export async function fetchPullData(pullPath: string, githubToken: string | null
 }
 
 export async function fetchDiffData(diffPath: string, githubToken: string | null) {
-	console.log(diffPath);
 	const repoOwner = diffPath.split("/")[0];
 	const repoName = diffPath.split("/")[1];
 	const pullNumber = diffPath.split("/")[3];

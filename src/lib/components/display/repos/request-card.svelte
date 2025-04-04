@@ -63,9 +63,10 @@
 		const apiEndpoint = repo.repo_url.split('.com/')[1];
 		const res = await fetch(`/api/github/repo?path=${apiEndpoint}`);
 		repoData = await res.json();
-		repoData.bookmarked = bookmarks?.find((b) => b === repo.r_id) !== undefined;
-		if (bookmark) {
-			repoData.bookmarked = true;
+		if (bookmarks.length === 0 && !bookmark) {
+			repoData.bookmarked = false;
+		} else {
+			repoData.bookmarked = bookmarks?.find((b) => b === repo.r_id) !== undefined || bookmark;
 		}
 	});
 

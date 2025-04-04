@@ -41,7 +41,7 @@ export async function getUserFromGitHubId(githubId: number) {
 export async function getUserByUsername(username: string) {
     const row = await db.select()
       .from(schema.user)
-      .where(eq(schema.user.username, username))
+      .where(eq(schema.user.username, username.toLowerCase()))
       .limit(1);
   
     return row[0] ?? null;
@@ -51,7 +51,7 @@ export async function getUserByUsername(username: string) {
   export async function getUserByEmail(email: string) {
     const row = await db.select()
       .from(schema.user)
-      .where(eq(schema.user.email, email))
+      .where(eq(schema.user.email, email.toLowerCase()))
       .limit(1);
   
     return row[0] ?? null;

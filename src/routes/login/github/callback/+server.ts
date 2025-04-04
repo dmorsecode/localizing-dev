@@ -35,12 +35,10 @@ export async function GET(event: RequestEvent): Promise<Response> {
 		}
 	});
 
-	console.log(tokens.accessToken());
-
 	const githubUser = await githubUserResponse.json();
 	const githubUserId = githubUser.id;
-	const githubEmail = githubUser.email;
-	const githubUsername = githubUser.login;
+	const githubEmail = githubUser.email.toLowerCase() ?? null;
+	const githubUsername = githubUser.login.toLowerCase();
 	const githubAvatar = githubUser.avatar_url;
 
 	const existingUser = await getUserFromGitHubId(githubUserId);
