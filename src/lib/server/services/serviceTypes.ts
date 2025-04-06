@@ -1,12 +1,12 @@
 export type GetRepositoriesOptions = {
-	originalLanguage?: string;
-    requestedLanguage?: string;
-    minKb?: string;
-    maxKb?: string;
-    minStar?: string;
-    maxStar?: string;
-    licenseType?: string;
-    tags?: string[];
+	originalLanguage?: string | null;
+    requestedLanguage?: string | null;
+    minKb?: string | null;
+    maxKb?: string | null;
+    minStar?: string | null;
+    maxStar?: string | null;
+    licenseType?: string | null;
+    tags?: string[] | null;
     page?: number;
 	perPage?: number;
 };

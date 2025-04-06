@@ -8,12 +8,18 @@ export const createRequest = async ({
 	requestor_id,
 	repo_url,
 	status,
-	description
+	description,
+	kb_size,
+	star_size,
+	license
 }: {
 	requestor_id: string;
 	repo_url: string;
 	status?: string;
 	description?: string | null;
+	kb_size?: number | null;
+	star_size?: number | null;
+	license?: string | null;
 }) => {
 	return await db
 		.insert(schema.requests)
@@ -90,6 +96,9 @@ export const getAllRequests = async (options: serviceTypes.GetRepositoriesOption
 			requestor_id: schema.requests.requestor_id,
 			status: schema.requests.status,
 			description: schema.requests.description,
+			kb_size: schema.requests.kb_size,
+			star_size: schema.requests.star_size,
+			license: schema.requests.license,
 			current_languages: {
 				request_id: schema.cur_languages.request_id,
 				language: schema.cur_languages.language
@@ -132,6 +141,9 @@ export const getAllRequests = async (options: serviceTypes.GetRepositoriesOption
 				requestor_id: row.requestor_id,
 				status: row.status ?? 'open',
 				description: row.description,
+				kb_size: row.kb_size,
+				star_size: row.star_size,
+				license: row.license,
 				tags: [],
 				current_languages: [],
 				requested_languages: []
@@ -174,6 +186,9 @@ export const getRequestById = async (r_id: string) => {
 			requestor_id: schema.requests.requestor_id,
 			status: schema.requests.status,
 			description: schema.requests.description,
+			kb_size: schema.requests.kb_size,
+			star_size: schema.requests.star_size,
+			license: schema.requests.license,
 			current_languages: {
 				request_id: schema.cur_languages.request_id,
 				language: schema.cur_languages.language
@@ -202,6 +217,9 @@ export const getRequestById = async (r_id: string) => {
 		requestor_id: rows[0].requestor_id,
 		status: rows[0].status,
 		description: rows[0].description,
+		kb_size: rows[0].kb_size,
+		star_size: rows[0].star_size,
+		license: rows[0].license,
 		current_languages: [],
 		requested_languages: [],
 		tags: []
@@ -244,6 +262,9 @@ export const getRequestByRepoUrl = async (repo_url: string) => {
 			requestor_id: schema.requests.requestor_id,
 			status: schema.requests.status,
 			description: schema.requests.description,
+			kb_size: schema.requests.kb_size,
+			star_size: schema.requests.star_size,
+			license: schema.requests.license,
 			current_languages: {
 				request_id: schema.cur_languages.request_id,
 				language: schema.cur_languages.language
@@ -272,6 +293,9 @@ export const getRequestByRepoUrl = async (repo_url: string) => {
 		requestor_id: rows[0].requestor_id,
 		status: rows[0].status,
 		description: rows[0].description,
+		kb_size: rows[0].kb_size,
+		star_size: rows[0].star_size,
+		license: rows[0].license,
 		current_languages: [],
 		requested_languages: [],
 		tags: []
@@ -312,6 +336,9 @@ export const getRequestsFromList = async (requestIds: string[]) => {
 			requestor_id: schema.requests.requestor_id,
 			status: schema.requests.status,
 			description: schema.requests.description,
+			kb_size: schema.requests.kb_size,
+			star_size: schema.requests.star_size,
+			license: schema.requests.license,
 			current_languages: {
 				request_id: schema.cur_languages.request_id,
 				language: schema.cur_languages.language
@@ -344,6 +371,9 @@ export const getRequestsFromList = async (requestIds: string[]) => {
 				requestor_id: row.requestor_id,
 				status: row.status ?? 'open',
 				description: row.description,
+				kb_size: row.kb_size,
+				star_size: row.star_size,
+				license: row.license,
 				tags: [],
 				current_languages: [],
 				requested_languages: []
@@ -381,6 +411,9 @@ export const getRequestsByUser = async (userId: string) => {
 			requestor_id: schema.requests.requestor_id,
 			status: schema.requests.status,
 			description: schema.requests.description,
+			kb_size: schema.requests.kb_size,
+			star_size: schema.requests.star_size,
+			license: schema.requests.license,
 			current_languages: {
 				request_id: schema.cur_languages.request_id,
 				language: schema.cur_languages.language
@@ -414,6 +447,9 @@ export const getRequestsByUser = async (userId: string) => {
 				requestor_id: row.requestor_id,
 				status: row.status ?? 'open',
 				description: row.description,
+				kb_size: row.kb_size,
+				star_size: row.star_size,
+				license: row.license,
 				tags: [],
 				current_languages: [],
 				requested_languages: []
@@ -464,6 +500,9 @@ type RequestWithLanguageAndTags = {
 	requestor_id: string;
 	status: string | null;
 	description: string | null;
+	kb_size: number | null;
+	star_size: number | null;
+	license: string | null;
 	current_languages: string[];
 	requested_languages: string[];
 	tags: string[];
