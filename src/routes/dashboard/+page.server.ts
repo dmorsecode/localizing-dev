@@ -36,7 +36,7 @@ export async function load(event: RequestEvent) {
 	const repos = await reposRes.json();
 
 	const requests = await getRequestsByUser(event.locals.user.id);
-	const submissions = await getSubmissionsByTranslatorId(event.locals.user.id);
+	const submissions = await getSubmissionsByTranslatorId(event.locals.user.id, false);
 	const bookmarks = await getBookmarksForUser(event.locals.user.id, true);
 	const leaderboardScore = await getLeaderboardEntryByUserId(event.locals.user.id);
 

@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import * as schema from '$lib/server/db/schema';
 
@@ -48,11 +48,14 @@ export const getSubmissionsByRequestId = async (request_id: string) => {
 };
 
 //Get all submissions by translator
-export const getSubmissionsByTranslatorId = async (translator_id: string) => {
+export const getSubmissionsByTranslatorId = async (translator_id: string, merged: boolean = true) => {
   return await db
     .select()
     .from(schema.submission)
-    .where(eq(schema.submission.translator_id, translator_id));
+    .where(and(
+      eq(schema.submission.translator_id, translator_id),
+      merged ? eq(schema.submission.status, "merged") : undefined
+    ))
 };
 
 // Get submission by pull_url
