@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import { pgTable, text, integer, timestamp, boolean, primaryKey} from 'drizzle-orm/pg-core';
 
 export const user = pgTable('user', {
@@ -97,6 +98,66 @@ export const bookmarks = pgTable('bookmarks', {
 	pk: primaryKey({ columns: [table.user_id, table.request_id]})
 }));
 
+
+/* RELATIONS */
+
+export const requestRelations = relations(requests, ({ one, many }) => ({
+	languages: many(languages),
+	cur_languages: many(cur_languages),
+	tags: many(tags),
+	submissions: many(submission)
+}));
+
+export const userRelations = relations(user, ({ one, many }) => ({
+	requests: many(requests),
+	submissions: many(submission),
+	bookmarks: many(bookmarks),
+	leaderboard: one(leaderboard)
+}));
+
+export const languagesRelations = relations(languages, ({ one, many }) => ({
+	request: one(requests, {
+		fields: [languages.request_id],
+		references: [requests.r_id]
+	})
+}));
+
+export const tagsRelations = relations(tags, ({ one, many }) => ({
+	request: one(requests, {
+		fields: [tags.request_id],
+		references: [requests.r_id]
+	})
+}));
+
+export const cur_languagesRelations = relations(cur_languages, ({ one, many }) => ({
+	request: one(requests, {
+		fields: [cur_languages.request_id],
+		references: [requests.r_id]
+	})
+}));
+
+export const submissionRelations = relations(submission, ({ one, many }) => ({
+	request: one(requests, {
+		fields: [submission.request_id],
+		references: [requests.r_id]
+	}),
+	translator: one(user, {
+		fields: [submission.translator_id],
+		references: [user.id]
+	}),
+}));
+
+export const bookmarksRelations = relations(bookmarks, ({ one, many }) => ({
+	user: one(user, {
+		fields: [bookmarks.user_id],
+		references: [user.id]
+	}),
+	request: one(requests, {
+		fields: [bookmarks.request_id],
+		references: [requests.r_id]
+	})
+}));
+
 // Exporting inferred types
 export type Session = typeof session.$inferSelect;
 export type User = typeof user.$inferSelect;
@@ -109,3 +170,10 @@ export type Languages = typeof languages.$inferSelect;
 export type Tags = typeof tags.$inferSelect;
 export type Cur_Languages = typeof cur_languages.$inferSelect;
 export type Bookmarks = typeof bookmarks.$inferSelect;
+export type RequestRelations = typeof requestRelations;
+export type UserRelations = typeof userRelations;
+export type LanguagesRelations = typeof languagesRelations;
+export type TagsRelations = typeof tagsRelations;
+export type Cur_LanguagesRelations = typeof cur_languagesRelations;
+export type SubmissionRelations = typeof submissionRelations;
+export type BookmarksRelations = typeof bookmarksRelations;

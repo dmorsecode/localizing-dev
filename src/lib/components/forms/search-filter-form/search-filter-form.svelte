@@ -64,9 +64,8 @@
 
 </script>
 
-<h1 class="font-bold text-2xl mb-8">Submit a Repository for Localization</h1>
 <form method="POST" use:enhance class="flex flex-row justify-between gap-24 bg-white p-4 rounded-md shadow-md">
-	<div class="grow basis-1/3">
+	<div class="grow basis-1/5">
 		<Form.Field {form} name="repoName">
 			<Form.Control let:attrs>
 				<Form.Label class="font-semibold">Repository Name</Form.Label>
@@ -83,7 +82,7 @@
 						$formData.currentLang = v.value;
 			}}>
 					<Select.Trigger {...attrs}>
-						<Select.Value placeholder="Choose a language" />
+						<Select.Value />
 					</Select.Trigger>
 					<Select.Content class="max-h-1/2 overflow-y-scroll">
 						{#each LANGS as lang}
@@ -104,7 +103,7 @@
 						$formData.requestedLang = v.value;
 			}}>
 					<Select.Trigger {...attrs}>
-						<Select.Value placeholder="Choose a language" />
+						<Select.Value />
 					</Select.Trigger>
 					<Select.Content class="max-h-1/2 overflow-y-scroll">
 						{#each LANGS as lang}
@@ -203,7 +202,7 @@
 			{#if $submitting}
 				<Spinner />
 			{:else}
-				Submit
+				Apply Filters
 			{/if}
 		</Form.Button>
 	</div>

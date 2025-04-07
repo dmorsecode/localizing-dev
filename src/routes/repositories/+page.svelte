@@ -11,7 +11,6 @@
 <div class="flex flex-col gap-2 bg-cyan-300 p-4 rounded-lg">
 	<h1 class="text-2xl font-bold">Open Repositories</h1>
 	<h2 class="text-lg font-semibold">Find a repository to contribute to.</h2>
-	<SearchFilter />
 	<SearchFilterForm data={data.searchForm!} />
 </div>
 

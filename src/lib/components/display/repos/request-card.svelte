@@ -16,8 +16,8 @@
 	export let repo: {
 		repo_url: string;
 		r_id: string;
-		current_languages: string[];
-		requested_languages: string[];
+		cur_languages: { language: string }[];
+		languages: { language: string }[];
 		description: string;
 	};
 	export let dashboard = false;
@@ -52,13 +52,7 @@
 		},
 		bookmarked: false
 	};
-	// (async () => {
-	// 	// our repo.repo_url is the full url. we want everything after the .com
-	// 	const apiEndpoint = repo.repo_url.split(".com/")[1];
-	// 	const repoRes = await fetch(`https://api.github.com/repos/${apiEndpoint}`);
-	// 	repoData = await repoRes.json();
-	// 	console.log(repo);
-	// })();
+
 	onMount(async () => {
 		const apiEndpoint = repo.repo_url.split('.com/')[1];
 		const res = await fetch(`/api/github/repo?path=${apiEndpoint}`);
@@ -154,13 +148,13 @@
 				<Table.Body>
 					<Table.Row>
 						<Table.Cell class="px-2 align-top">
-							{#each repo.current_languages as lang}
-								<p>{LANGS.find((l) => l.code === lang)?.name}</p>
+							{#each repo.cur_languages as lang}
+								<p>{LANGS.find((l) => l.code === lang.language)?.name}</p>
 							{/each}
 						</Table.Cell>
 						<Table.Cell class="px-0">
-							{#each repo.requested_languages as lang}
-								<p>{LANGS.find((l) => l.code === lang)?.name}</p>
+							{#each repo.languages as lang}
+								<p>{LANGS.find((l) => l.code === lang.language)?.name}</p>
 							{/each}
 						</Table.Cell>
 					</Table.Row>
