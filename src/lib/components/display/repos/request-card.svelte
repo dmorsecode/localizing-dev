@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import * as Card from '$lib/components/ui/card';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as Table from '$lib/components/ui/table';
+	import * as Dialog from '$lib/components/ui/dialog';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Button } from '$lib/components/ui/button';
 	import { GitPullRequest } from 'lucide-svelte';
@@ -63,6 +65,34 @@
 			repoData.bookmarked = bookmarks?.find((b) => b === repo.r_id) !== undefined || bookmark;
 		}
 	});
+
+	$: isOpen = false;
+	$: isDeleting = false;
+
+	function modalClose() {
+		isOpen = false;
+	}
+
+	function deleteRepo() {
+		isDeleting = true;
+		fetch('/api/db/request', {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				request_id: repo.r_id
+			})
+		}).then((res) => {
+			if (res.ok) {
+				invalidateAll();
+			} else {
+				console.error("Error removing request: ", res.statusText);
+			}
+			isDeleting = false;
+			modalClose();
+		});
+	}
 
 	function toggleBookmark(): void {
 		if (repoData.bookmarked === undefined) return;
@@ -171,9 +201,30 @@
 					Contribute
 				</Button>
 			{:else}
-				<Button href={`${repoData.html_url + "/pulls"}`} target="_blank" rel="noopener noreferrer" variant="outline">
-					Close
-				</Button>
+				<Dialog.Root bind:open={isOpen}>
+					<Dialog.Trigger>
+						<Button variant="outline" class="cursor-pointer">
+							Close
+						</Button>
+					</Dialog.Trigger>
+					<Dialog.Content>
+						<h1 class="font-bold text-xl">Are you sure?</h1>
+						<p>Closing a request will remove it from the repository listing and your dashboard. Submissions already posted for your repository will not be affected.</p>
+						<p>This cannot be undone.</p>
+						<div class="flex mt-4 gap-4">
+							<Button variant="destructive" class="min-w-1/3 cursor-pointer" on:click={deleteRepo}>
+								{#if isDeleting}
+									<Spinner />
+								{:else}
+									Close Request
+								{/if}
+							</Button>
+							<Button variant="outline" class="cursor-pointer" on:click={modalClose}>
+								Cancel
+							</Button>
+						</div>
+					</Dialog.Content>
+				</Dialog.Root>
 				<Button href={`${repoData.html_url + "/pulls"}`} target="_blank" rel="noopener noreferrer" variant="outline">
 					<GitPullRequest size={16} class="mr-2" />
 					View

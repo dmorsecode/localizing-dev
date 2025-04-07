@@ -147,25 +147,13 @@ export const getAllRequests = async (options: serviceTypes.GetRepositoriesOption
 	const total = await db.select({ count: count() }).from(schema.requests);
 	const totalPages = Math.ceil(total[0].count / perPage);
 
-	for (let i = 0; i < rows.length; i++) {
-		if (tags?.length && !rows[i].tags.some(tag => tags.includes(tag.tag))) {
-			rows.splice(i, 1);
-			i--;
-			continue;
-		}
+	rows.filter(row => {
+		if (tags?.length && !row.tags.some(tag => tags.includes(tag.tag))) return false;
+		if (originalLanguage && !row.cur_languages.some(lang => lang.language === originalLanguage)) return false;
+		if (requestedLanguage && !row.languages.some(lang => lang.language === requestedLanguage)) return false;
 
-		if (originalLanguage && !rows[i].cur_languages.some(lang => lang.language === originalLanguage)) {
-			rows.splice(i, 1);
-			i--;
-			continue;
-		}
-
-		if (requestedLanguage && !rows[i].languages.some(lang => lang.language === requestedLanguage)) {
-			rows.splice(i, 1);
-			i--;
-			continue;
-		}
-	}
+		return true;
+	})
 
 	return {
 		data: rows,
