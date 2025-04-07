@@ -4,14 +4,17 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as Table from '$lib/components/ui/table';
 	import * as Dialog from '$lib/components/ui/dialog';
+	import * as Popover from "$lib/components/ui/popover";
 	import { Separator } from '$lib/components/ui/separator';
 	import { Button } from '$lib/components/ui/button';
 	import { GitPullRequest } from 'lucide-svelte';
 	import { GitFork } from 'lucide-svelte';
 	import { Bookmark } from 'lucide-svelte';
+	import { Tags } from 'lucide-svelte';
 	import { LANGS } from '$lib/i18n';
 	import RepoSkeleton from '$lib/components/display/repos/repo-skeleton.svelte';
 	import Spinner from '$lib/components/ui/spinner/spinner.svelte';
+	import Tag from '$lib/components/ui/tag/tag.svelte';
 	import { onMount } from 'svelte';
 
 
@@ -21,7 +24,10 @@
 		cur_languages: { language: string }[];
 		languages: { language: string }[];
 		description: string;
+		tags: { tag: string }[];
 	};
+
+	console.log(repo);
 	export let dashboard = false;
 	export let bookmarks: string[] = [];
 	export let bookmark = false;
@@ -196,6 +202,14 @@
 			<p
 				class={`${repoData.license == null ? "italic text-primary/60" : ""} grow`}>{repoData.license?.name ?? "No license."}</p>
 			{#if !dashboard || bookmark}
+				<Popover.Root>
+					<Popover.Trigger><Tags class="cursor-pointer opacity-80" /></Popover.Trigger>
+					<Popover.Content class="flex gap-2 p-2 flex-wrap justify-center items-center w-fit">
+						{#each repo.tags as tag}
+							<Tag label={tag.tag} removable={false} />
+						{/each}
+					</Popover.Content>
+				</Popover.Root>
 				<Button href={`${repoData.html_url + "/fork"}`} target="_blank" rel="noopener noreferrer" variant="outline">
 					<GitFork size={16} class="mr-2" />
 					Contribute
