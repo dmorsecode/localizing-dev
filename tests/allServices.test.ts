@@ -22,7 +22,8 @@ describe('Language Service', () => {
 			.insert(schema.requests)
 			.values({
 				requestor_id: userId, // Make sure this user exists or mock it
-				repo_url: 'https://github.com/example/repo'
+				repo_url: 'https://github.com/example/repo',
+				repo_name: 'example-repo',
 			})
 			.returning();
 		return request;
@@ -47,7 +48,8 @@ describe('Language Service', () => {
 		await db.insert(schema.requests).values({
 			r_id: requestId,
 			requestor_id: userId,
-			repo_url: 'https://github.com/example/repo'
+			repo_url: 'https://github.com/example/repo',
+			repo_name: 'example-repo',
 		});
 	});
 
@@ -379,6 +381,7 @@ describe('Request Service', () => {
 		const [request] = await createRequest({
 			requestor_id: userId,
 			repo_url: 'https://github.com/example/repo',
+			repo_name: 'example-repo',
             kb_size: 512,
 			star_size: 1200
 		});
@@ -392,6 +395,7 @@ describe('Request Service', () => {
 		const [request] = await createRequest({
 			requestor_id: userId,
 			repo_url: 'https://github.com/example/repo',
+			repo_name: 'example-repo',
 			kb_size: 512,
 			star_size: 1200
 		});
@@ -425,8 +429,8 @@ describe('Request Service', () => {
         expect(tagValues).toContain('auth');
 
         // Requested Languages
-        expect(Array.isArray(result.languages)).toBe(true);
-        const languageValues = result.languages.map((l) => l.language);
+        expect(Array.isArray(result.requested_languages)).toBe(true);
+        const languageValues = result.requested_languages.map((l) => l.language);
         expect(languageValues).toContain('french');
         expect(languageValues).toContain('spanish');
 		
@@ -440,6 +444,7 @@ describe('Request Service', () => {
 		const [request1] = await createRequest({
 			requestor_id: userId,
 			repo_url: 'https://github.com/example/repo1',
+			repo_name: 'example-repo',
 			kb_size: 48,
 			star_size: 100
 		});
@@ -447,6 +452,7 @@ describe('Request Service', () => {
 		const [request2] = await createRequest({
 			requestor_id: userId,
 			repo_url: 'https://github.com/example/repo2',
+			repo_name: 'example-repo',
 			kb_size: 512,
 			star_size: 1200
 		});
@@ -482,7 +488,7 @@ describe('Request Service', () => {
 		expect(r1Tags).toContain('api');
 		expect(r1Tags).toContain('auth');
 
-		const r1Langs = r1?.languages.map((l) => l.language);
+		const r1Langs = r1?.requested_languages.map((l) => l.language);
 		expect(r1Langs).toContain('french');
 		expect(r1Langs).toContain('spanish');
 
@@ -495,7 +501,7 @@ describe('Request Service', () => {
 		const r2Tags = r2?.tags.map((t) => t.tag);
 		expect(r2Tags).toContain('backend');
 
-		const r2Langs = r2?.languages.map((l) => l.language);
+		const r2Langs = r2?.requested_languages.map((l) => l.language);
 		expect(r2Langs).toContain('japanese');
 
 		//console.log(JSON.stringify(result, null, 2));
@@ -505,6 +511,7 @@ describe('Request Service', () => {
         const [request1] = await createRequest({
             requestor_id: userId,
             repo_url: 'https://github.com/example/repo1',
+			repo_name: 'example-repo',
             kb_size: 48,
             star_size: 100
         });
@@ -512,6 +519,7 @@ describe('Request Service', () => {
         const [request2] = await createRequest({
             requestor_id: userId,
             repo_url: 'https://github.com/example/repo2',
+			repo_name: 'example-repo',
             kb_size: 512,
             star_size: 1200
         });
@@ -571,6 +579,7 @@ describe('Request Service', () => {
         const [request1] = await createRequest({
             requestor_id: userId,
             repo_url: 'https://github.com/example/repo1',
+			repo_name: 'example-repo',
             kb_size: 128,
             star_size: 100
         });
@@ -578,6 +587,7 @@ describe('Request Service', () => {
         const [request2] = await createRequest({
             requestor_id: userId,
             repo_url: 'https://github.com/example/repo2',
+			repo_name: 'example-repo',
             kb_size: 512,
             star_size: 1200
         });
@@ -593,6 +603,7 @@ describe('Request Service', () => {
         const [request1] = await createRequest({
           requestor_id: userId,
           repo_url: 'https://github.com/example/repo1',
+		  repo_name: 'example-repo',
           kb_size: 48,
           star_size: 100
         });
@@ -600,6 +611,7 @@ describe('Request Service', () => {
         const [request2] = await createRequest({
           requestor_id: userId,
           repo_url: 'https://github.com/example/repo2',
+		  repo_name: 'example-repo',
           kb_size: 512,
           star_size: 1200
         });
@@ -631,6 +643,7 @@ describe('Request Service', () => {
         const [request1] = await createRequest({
             requestor_id: userId,
             repo_url: 'https://github.com/example/repo1',
+			repo_name: 'example-repo',
             kb_size: 48,
             star_size: 100
         });
@@ -638,6 +651,7 @@ describe('Request Service', () => {
         const [request2] = await createRequest({
             requestor_id: userId,
             repo_url: 'https://github.com/example/repo2',
+			repo_name: 'example-repo',
             kb_size: 512,
             star_size: 1200
         });
@@ -658,6 +672,7 @@ describe('Request Service', () => {
         const [request1] = await createRequest({
             requestor_id: userId,
             repo_url: 'https://github.com/example/repo1',
+			repo_name: 'example-repo',
             kb_size: 48,
             star_size: 100
         });
@@ -665,6 +680,7 @@ describe('Request Service', () => {
         const [request2] = await createRequest({
             requestor_id: userId,
             repo_url: 'https://github.com/example/repo2',
+			repo_name: 'example-repo',
             kb_size: 512,
             star_size: 1200
         });
@@ -702,6 +718,7 @@ describe('Request Service', () => {
           const [request] = await createRequest({
             requestor_id: userId,
             repo_url: `https://github.com/example/repo${i}`,
+			repo_name: 'example-repo',
             kb_size: 100 + i,
             star_size: 1000 + i,
           });
@@ -735,6 +752,7 @@ describe('Request Service', () => {
 		const [request] = await createRequest({
 			requestor_id: userId,
 			repo_url: 'https://github.com/repo/update-me',
+			repo_name: 'example-repo',
 			kb_size: 512,
 			star_size: 1200
 		});
@@ -750,6 +768,7 @@ describe('Request Service', () => {
 		const [request] = await createRequest({
 			requestor_id: userId,
 			repo_url: 'https://github.com/repo/delete-me',
+			repo_name: 'example-repo',
 			kb_size: 512,
 			star_size: 1200
 		});
@@ -808,7 +827,8 @@ describe('Review Service', () => {
 		await db.insert(schema.requests).values({
 			r_id: requestId,
 			requestor_id: userId,
-			repo_url: 'https://github.com/example/repo'
+			repo_url: 'https://github.com/example/repo',
+			repo_name: 'example-repo',
 		});
 
 		await db.insert(schema.submission).values({
@@ -1039,7 +1059,8 @@ describe('Submission Service', () => {
 		await db.insert(schema.requests).values({
 			r_id: requestId,
 			requestor_id: userId,
-			repo_url: 'https://github.com/example/repo'
+			repo_url: 'https://github.com/example/repo',
+			repo_name: 'example-repo',
 		});
 	});
 
@@ -1187,7 +1208,8 @@ describe('Tag Service', () => {
 		await db.insert(schema.requests).values({
 			r_id: requestId,
 			requestor_id: userId,
-			repo_url: 'https://github.com/example/repo'
+			repo_url: 'https://github.com/example/repo',
+			repo_name: 'example-repo',
 		});
 	});
 
