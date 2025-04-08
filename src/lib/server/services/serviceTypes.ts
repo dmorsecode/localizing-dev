@@ -1,4 +1,5 @@
 export type GetRepositoriesOptions = {
+    repoName?: string | null;
     originalLanguage?: string[] | null;
     requestedLanguage?: string[] | null;
     minKb?: number | null;
@@ -14,6 +15,7 @@ export type GetRepositoriesOptions = {
 export type RequestWithLanguageAndTags = {
     r_id: string;
     repo_url: string;
+    repo_name: string;
     requestor_id: string;
     status: string | null;
     description: string | null;

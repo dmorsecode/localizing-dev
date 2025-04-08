@@ -159,6 +159,7 @@ async function addRepo(event: RequestEvent) {
 	const requestObject = {
 		requestor_id: event.locals.user!.id,
 		repo_url: form.data.url,
+		repo_name: repoData.name,
 		status: 'open',
 		description: form.data.description,
 		kb_size: repoData.size,

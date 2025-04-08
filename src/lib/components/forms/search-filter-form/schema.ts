@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-const numberInString = z.ostring().transform((val, ctx) => {
-	const parsed = parseInt(val ?? '');
+const numberInString = z.onumber().or(z.ostring()).transform((val, ctx) => {
+	const parsed= parseInt(val as string ?? '');
 	if (isNaN(parsed) && val !== '') {
 	  ctx.addIssue({
 		code: z.ZodIssueCode.custom,

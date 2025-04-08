@@ -1114,7 +1114,7 @@ describe('Submission Service', () => {
             earned_points: 0
 		});
 
-		const submissions = await getSubmissionsByTranslatorId(translatorId);
+		const submissions = await getSubmissionsByTranslatorId(translatorId, false);
 		expect(submissions).toHaveLength(2);
 	});
 

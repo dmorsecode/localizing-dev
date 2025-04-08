@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS "requests" (
 	r_id text PRIMARY KEY,
 	requestor_id text NOT NULL REFERENCES "user" (id),
 	repo_URL text NOT NULL,
+	repo_name text NOT NULL,
 	status text DEFAULT 'open',
 	description text,
 	kb_size integer,

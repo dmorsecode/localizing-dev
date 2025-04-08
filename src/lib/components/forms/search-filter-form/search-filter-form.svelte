@@ -122,14 +122,14 @@
 			<Form.Field {form} name="minKb">
 				<Form.Control let:attrs>
 					<Form.Label class="font-semibold">Minimum Kb.</Form.Label>
-					<Input {...attrs} bind:value={$formData.minKb} placeholder=0 />
+					<Input {...attrs} bind:value={$formData.minKb} type="text" placeholder="0" />
 				</Form.Control>
 				<Form.FieldErrors />
 			</Form.Field>
 			<Form.Field {form} name="maxKb">
 				<Form.Control let:attrs>
 					<Form.Label class="font-semibold">Maximum Kb.</Form.Label>
-					<Input {...attrs} bind:value={$formData.maxKb} placeholder="Unlimited" />
+					<Input {...attrs} bind:value={$formData.maxKb} type="text" placeholder="Unlimited" />
 				</Form.Control>
 				<Form.FieldErrors />
 			</Form.Field>
@@ -139,14 +139,14 @@
 			<Form.Field {form} name="minStars">
 				<Form.Control let:attrs>
 					<Form.Label class="font-semibold">Minimum Stars</Form.Label>
-					<Input {...attrs} bind:value={$formData.minStars} placeholder=0 />
+					<Input {...attrs} bind:value={$formData.minStars} type="text" placeholder="0" />
 				</Form.Control>
 				<Form.FieldErrors />
 			</Form.Field>
 			<Form.Field {form} name="maxStars">
 				<Form.Control let:attrs>
 					<Form.Label class="font-semibold">Maximum Stars</Form.Label>
-					<Input {...attrs} bind:value={$formData.maxStars} placeholder="Unlimited" />
+					<Input {...attrs} bind:value={$formData.maxStars} type="text" placeholder="Unlimited" />
 				</Form.Control>
 				<Form.FieldErrors />
 			</Form.Field>
@@ -160,9 +160,10 @@
 					$formData.license = v.value;
 				}}>
 					<Select.Trigger {...attrs}>
-						<Select.Value placeholder="License" />
+						<Select.Value />
 					</Select.Trigger>
 					<Select.Content>
+						<Select.Item value="none" label="No License" />
 						{#each licenses as license}
 							<Select.Item value={license.key} label={license.name} />
 						{/each}

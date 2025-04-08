@@ -27,13 +27,15 @@
 	{#if (reposToDisplay === null || reposToDisplay?.length === 0) && !dashboard}
 		<p class="text-center text-muted-foreground">No repositories found.</p>
 	{/if}
-	{#each reposToDisplay as repo}
-		{#if type === "request"}
-			<RequestCard {repo} {dashboard} {bookmarks} />
-		{:else}
-			<SubmissionCard {repo} {dashboard} />
-		{/if}
-	{/each}
+	{#key reposToDisplay}
+		{#each reposToDisplay as repo}
+			{#if type === "request"}
+				<RequestCard {repo} {dashboard} {bookmarks} />
+			{:else}
+				<SubmissionCard {repo} />
+			{/if}
+		{/each}
+	{/key}
 	{#if dashboard}
 		<RepoAdd {userRepos} {form} {type} />
 	{/if}

@@ -14,8 +14,6 @@ export async function GET({ url, cookies }: RequestEvent) {
 	const merged = url.searchParams.get('merged') === 'false' ? false : true;
 	const { session } = await validateSessionToken(token ?? '');
 
-	console.log(path.split('.com/')[1]);
-
 	try {
 		const data = await getSubmissionByPullUrl(path);
 		if (data.status !== "merged" && merged) {

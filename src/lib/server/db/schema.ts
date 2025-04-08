@@ -32,6 +32,7 @@ export const requests = pgTable('requests', {
 	r_id: text('r_id').primaryKey().$defaultFn(() => crypto.randomUUID()),
 	requestor_id: text('requestor_id').notNull().references(() => user.id),
 	repo_url: text('repo_url').notNull(),
+	repo_name: text('repo_name').notNull(),
 	status: text('status').default('open'),
 	description: text('description'),
 	kb_size: integer('kb_size'),
@@ -102,7 +103,7 @@ export const bookmarks = pgTable('bookmarks', {
 /* RELATIONS */
 
 export const requestRelations = relations(requests, ({ one, many }) => ({
-	languages: many(languages),
+	requested_languages: many(languages),
 	cur_languages: many(cur_languages),
 	tags: many(tags),
 	submissions: many(submission)

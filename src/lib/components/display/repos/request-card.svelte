@@ -22,12 +22,11 @@
 		repo_url: string;
 		r_id: string;
 		cur_languages: { language: string }[];
-		languages: { language: string }[];
+		requested_languages: { language: string }[];
 		description: string;
 		tags: { tag: string }[];
 	};
 
-	console.log(repo);
 	export let dashboard = false;
 	export let bookmarks: string[] = [];
 	export let bookmark = false;
@@ -189,7 +188,7 @@
 							{/each}
 						</Table.Cell>
 						<Table.Cell class="px-0">
-							{#each repo.languages as lang}
+							{#each repo.requested_languages as lang}
 								<p>{LANGS.find((l) => l.code === lang.language)?.name}</p>
 							{/each}
 						</Table.Cell>

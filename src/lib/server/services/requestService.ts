@@ -7,6 +7,7 @@ import * as serviceTypes from './serviceTypes';
 export const createRequest = async ({
 	requestor_id,
 	repo_url,
+	repo_name,
 	status,
 	description,
 	kb_size,
@@ -15,6 +16,7 @@ export const createRequest = async ({
 }: {
 	requestor_id: string;
 	repo_url: string;
+	repo_name: string;
 	status?: string;
 	description?: string | null;
 	kb_size: number;
@@ -26,11 +28,12 @@ export const createRequest = async ({
 		.values({
 			requestor_id,
 			repo_url,
+			repo_name,
 			status: status ?? 'open',
 			description: description ?? null,
 			kb_size: kb_size,
 			star_size: star_size,
-			license: license ?? null
+			license: license ?? "none"
 		})
 		.returning();
 };
@@ -41,6 +44,7 @@ export const getAllRequests = async (options: serviceTypes.GetRepositoriesOption
 	const {
 		page = 1,
 		perPage = 10,
+		repoName,
 		originalLanguage,
 		requestedLanguage,
 		minKb,
@@ -55,6 +59,10 @@ export const getAllRequests = async (options: serviceTypes.GetRepositoriesOption
 
 	//chain conditions
 	const conditions = [];
+
+	if (repoName) {
+		conditions.push(sql`r.repo_name ILIKE ${`%${repoName}%`}`);
+	}
 
 	if (originalLanguage) {
 		conditions.push(sql`r.r_id IN (SELECT request_id FROM cur_languages WHERE language IN (${sql.join(originalLanguage.map(l => sql`${l}`), sql`, `)}))`);
@@ -121,7 +129,7 @@ export const getAllRequests = async (options: serviceTypes.GetRepositoriesOption
 	//return null if no rows found
 	if (rows.length === 0) return null;
 
-	const total = await db.select({ count: count() }).from(schema.requests);
+	const total = await db.execute(sql`SELECT COUNT(*) FROM requests r ${whereClause}`) as unknown as { count: number }[];
 	const totalPages = Math.ceil(total[0].count / perPage);
 
 	return {
@@ -147,7 +155,7 @@ export const getRequestById = async (r_id: string) => {
 					language: true
 				}
 			},
-			languages: {
+			requested_languages: {
 				columns: {
 					language: true
 				}
@@ -176,7 +184,7 @@ export const getRequestByRepoUrl = async (repo_url: string) => {
 					language: true
 				}
 			},
-			languages: {
+			requested_languages: {
 				columns: {
 					language: true
 				}
@@ -204,7 +212,7 @@ export const getRequestsFromList = async (requestIds: string[]) => {
 					language: true
 				}
 			},
-			languages: {
+			requested_languages: {
 				columns: {
 					language: true
 				}
@@ -233,7 +241,7 @@ export const getRequestsByUser = async (userId: string) => {
 					language: true
 				}
 			},
-			languages: {
+			requested_languages: {
 				columns: {
 					language: true
 				}
@@ -262,23 +270,4 @@ export const updateRequest = async (
 //Delete a request
 export const deleteRequest = async (r_id: string) => {
 	return await db.delete(schema.requests).where(eq(schema.requests.r_id, r_id));
-};
-
-// For testing
-export const getJoinedRequestById = async (r_id: string) => {
-	const rows = await db.query.requests.findMany({
-		where: eq(schema.requests.r_id, r_id),
-		with: {
-			tags: true,
-			cur_languages: true,
-			languages: true
-		}
-	});
-
-	console.log(rows[0]);
-
-	//return null if no rows found
-	if (rows.length === 0) return null;
-
-	return rows;
 };
