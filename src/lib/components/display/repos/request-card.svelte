@@ -1,25 +1,32 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import * as Card from '$lib/components/ui/card';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as Table from '$lib/components/ui/table';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import * as Popover from "$lib/components/ui/popover";
 	import { Separator } from '$lib/components/ui/separator';
 	import { Button } from '$lib/components/ui/button';
 	import { GitPullRequest } from 'lucide-svelte';
 	import { GitFork } from 'lucide-svelte';
 	import { Bookmark } from 'lucide-svelte';
+	import { Tags } from 'lucide-svelte';
 	import { LANGS } from '$lib/i18n';
 	import RepoSkeleton from '$lib/components/display/repos/repo-skeleton.svelte';
 	import Spinner from '$lib/components/ui/spinner/spinner.svelte';
+	import Tag from '$lib/components/ui/tag/tag.svelte';
 	import { onMount } from 'svelte';
 
 
 	export let repo: {
 		repo_url: string;
 		r_id: string;
-		current_languages: string[];
-		requested_languages: string[];
+		cur_languages: { language: string }[];
+		requested_languages: { language: string }[];
 		description: string;
+		tags: { tag: string }[];
 	};
+
 	export let dashboard = false;
 	export let bookmarks: string[] = [];
 	export let bookmark = false;
@@ -52,13 +59,7 @@
 		},
 		bookmarked: false
 	};
-	// (async () => {
-	// 	// our repo.repo_url is the full url. we want everything after the .com
-	// 	const apiEndpoint = repo.repo_url.split(".com/")[1];
-	// 	const repoRes = await fetch(`https://api.github.com/repos/${apiEndpoint}`);
-	// 	repoData = await repoRes.json();
-	// 	console.log(repo);
-	// })();
+
 	onMount(async () => {
 		const apiEndpoint = repo.repo_url.split('.com/')[1];
 		const res = await fetch(`/api/github/repo?path=${apiEndpoint}`);
@@ -69,6 +70,34 @@
 			repoData.bookmarked = bookmarks?.find((b) => b === repo.r_id) !== undefined || bookmark;
 		}
 	});
+
+	$: isOpen = false;
+	$: isDeleting = false;
+
+	function modalClose() {
+		isOpen = false;
+	}
+
+	function deleteRepo() {
+		isDeleting = true;
+		fetch('/api/db/request', {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				request_id: repo.r_id
+			})
+		}).then((res) => {
+			if (res.ok) {
+				invalidateAll();
+			} else {
+				console.error("Error removing request: ", res.statusText);
+			}
+			isDeleting = false;
+			modalClose();
+		});
+	}
 
 	function toggleBookmark(): void {
 		if (repoData.bookmarked === undefined) return;
@@ -154,13 +183,13 @@
 				<Table.Body>
 					<Table.Row>
 						<Table.Cell class="px-2 align-top">
-							{#each repo.current_languages as lang}
-								<p>{LANGS.find((l) => l.code === lang)?.name}</p>
+							{#each repo.cur_languages as lang}
+								<p>{LANGS.find((l) => l.code === lang.language)?.name}</p>
 							{/each}
 						</Table.Cell>
 						<Table.Cell class="px-0">
 							{#each repo.requested_languages as lang}
-								<p>{LANGS.find((l) => l.code === lang)?.name}</p>
+								<p>{LANGS.find((l) => l.code === lang.language)?.name}</p>
 							{/each}
 						</Table.Cell>
 					</Table.Row>
@@ -172,14 +201,43 @@
 			<p
 				class={`${repoData.license == null ? "italic text-primary/60" : ""} grow`}>{repoData.license?.name ?? "No license."}</p>
 			{#if !dashboard || bookmark}
+				<Popover.Root>
+					<Popover.Trigger><Tags class="cursor-pointer opacity-80" /></Popover.Trigger>
+					<Popover.Content class="flex gap-2 p-2 flex-wrap justify-center items-center w-fit">
+						{#each repo.tags as tag}
+							<Tag label={tag.tag} removable={false} />
+						{/each}
+					</Popover.Content>
+				</Popover.Root>
 				<Button href={`${repoData.html_url + "/fork"}`} target="_blank" rel="noopener noreferrer" variant="outline">
 					<GitFork size={16} class="mr-2" />
 					Contribute
 				</Button>
 			{:else}
-				<Button href={`${repoData.html_url + "/pulls"}`} target="_blank" rel="noopener noreferrer" variant="outline">
-					Close
-				</Button>
+				<Dialog.Root bind:open={isOpen}>
+					<Dialog.Trigger>
+						<Button variant="outline" class="cursor-pointer">
+							Close
+						</Button>
+					</Dialog.Trigger>
+					<Dialog.Content>
+						<h1 class="font-bold text-xl">Are you sure?</h1>
+						<p>Closing a request will remove it from the repository listing and your dashboard. Submissions already posted for your repository will not be affected.</p>
+						<p>This cannot be undone.</p>
+						<div class="flex mt-4 gap-4">
+							<Button variant="destructive" class="min-w-1/3 cursor-pointer" on:click={deleteRepo}>
+								{#if isDeleting}
+									<Spinner />
+								{:else}
+									Close Request
+								{/if}
+							</Button>
+							<Button variant="outline" class="cursor-pointer" on:click={modalClose}>
+								Cancel
+							</Button>
+						</div>
+					</Dialog.Content>
+				</Dialog.Root>
 				<Button href={`${repoData.html_url + "/pulls"}`} target="_blank" rel="noopener noreferrer" variant="outline">
 					<GitPullRequest size={16} class="mr-2" />
 					View
