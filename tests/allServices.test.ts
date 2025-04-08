@@ -591,33 +591,41 @@ describe('Request Service', () => {
     
     it('should filter requests by requested language', async () => {
         const [request1] = await createRequest({
-            requestor_id: userId,
-            repo_url: 'https://github.com/example/repo1',
-            kb_size: 48,
-            star_size: 100
+          requestor_id: userId,
+          repo_url: 'https://github.com/example/repo1',
+          kb_size: 48,
+          star_size: 100
         });
-    
+      
         const [request2] = await createRequest({
-            requestor_id: userId,
-            repo_url: 'https://github.com/example/repo2',
-            kb_size: 512,
-            star_size: 1200
+          requestor_id: userId,
+          repo_url: 'https://github.com/example/repo2',
+          kb_size: 512,
+          star_size: 1200
         });
-    
+      
         await db.insert(schema.languages).values([
-            { request_id: request1.r_id, language: 'french' },
-            { request_id: request1.r_id, language: 'spanish' },
-            { request_id: request2.r_id, language: 'japanese' }
+          { request_id: request1.r_id, language: 'french' },
+          { request_id: request1.r_id, language: 'spanish' },
+          { request_id: request2.r_id, language: 'japanese' }
         ]);
-    
-        const result = await getAllRequests({ requestedLanguage: ['japanese'] });
-    
-        //console.log(JSON.stringify(result.data, null, 2));
-        expect(result).not.toBeNull();
-        expect(result?.data).toHaveLength(1);
-        expect(result?.data[0].requested_languages.map(l => l.language)).toContain('japanese');
-
-    });
+      
+        // Test filter for request2
+        const resultJapanese = await getAllRequests({ requestedLanguage: ['japanese'] });
+        expect(resultJapanese).not.toBeNull();
+        expect(resultJapanese?.data).toHaveLength(1);
+        expect(resultJapanese?.data[0].r_id).toBe(request2.r_id);
+        expect(resultJapanese?.data[0].requested_languages.map(l => l.language)).toContain('japanese');
+      
+        // Test filter for request1
+        const resultFrench = await getAllRequests({ requestedLanguage: ['french'] });
+        //console.log(JSON.stringify(resultFrench, null, 2));
+        expect(resultFrench).not.toBeNull();
+        expect(resultFrench?.data).toHaveLength(1);
+        expect(resultFrench?.data[0].r_id).toBe(request1.r_id);
+        expect(resultFrench?.data[0].requested_languages.map(l => l.language)).toContain('french');
+      });
+      
     
     it('should filter requests by tag', async () => {
         const [request1] = await createRequest({

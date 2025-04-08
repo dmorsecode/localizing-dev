@@ -57,11 +57,11 @@ export const getAllRequests = async (options: serviceTypes.GetRepositoriesOption
 	const conditions = [];
 
 	if (originalLanguage) {
-		conditions.push(sql`cl.language IN (${sql.join(originalLanguage.map(lang => sql`${lang}`), sql`, `)})`);
+		conditions.push(sql`r.r_id IN (SELECT request_id FROM cur_languages WHERE language IN (${sql.join(originalLanguage.map(l => sql`${l}`), sql`, `)}))`);
 	}
 
 	if (requestedLanguage) {
-		conditions.push(sql`rl.language IN (${sql.join(requestedLanguage.map(lang => sql`${lang}`), sql`, `)})`);
+		conditions.push(sql`r.r_id IN (SELECT request_id FROM languages	WHERE language IN (${sql.join(requestedLanguage.map(l => sql`${l}`), sql`, `)}))`);
 	}
 
 	if (minKb) {
@@ -85,7 +85,7 @@ export const getAllRequests = async (options: serviceTypes.GetRepositoriesOption
 	}
 
 	if (tags?.length) {
-		conditions.push(sql`t.tag IN (${sql.join(tags.map((tag) => sql`${tag}`),sql`, `)})`);
+		conditions.push(sql`r.r_id IN (SELECT request_id FROM tags WHERE tag IN (${sql.join(tags.map(tag => sql`${tag}`), sql`, `)}))`);
 	}
 
 	const whereClause = conditions.length ? sql`WHERE ${sql.join(conditions, sql` AND `)}` : sql``;
