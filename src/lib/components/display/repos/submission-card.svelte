@@ -10,7 +10,12 @@
 	import RepoSkeleton from '$lib/components/display/repos/repo-skeleton.svelte';
 	import { onMount } from 'svelte';
 
-	export let repo;
+	export let repo: {
+		s_id: string;
+		pull_url: string;
+		request_id: string;
+		translator_id: string;
+	};
 
 	interface SubmissionData {
 		name: string,
@@ -60,7 +65,7 @@
 		const reqData = await fetch(`/api/db/request?path=${pull.base?.repo.html_url}`);
 		const req = await reqData.json();
 
-		const subData = await fetch(`/api/db/submission?path=${repo.pull_url}`);
+		const subData = await fetch(`/api/db/submission?path=${repo.pull_url}&merged=${pull.merged}`);
 		const sub = await subData.json();
 
 		submissionData = {
@@ -76,7 +81,7 @@
 			language: sub.provided_language,
 			points: sub.earned_points,
 			pull_url: repo.pull_url,
-			status: pull.merged ? "merged" : "on review",
+			status: pull.merged || sub.status === "merged" ? "merged" : "on review",
 			diffSize: parseFloat((diffSize / 1024).toFixed(1)),
 			mergedAt: pull.merged_at ? new Date(pull.merged_at) : null,
 		}
@@ -88,19 +93,24 @@
 {:else}
 	<Card.Root
 		class="flex flex-col shadow-sm border-gray-600/15 text-sm grow basis-1/3 max-w-[calc(50%-1rem)] md:basis-1/4 md:max-w-[calc(33%-1rem)] lg:basis-1/5 lg:max-w-[calc(25%-1rem)]">
-		<a href="{submissionData.pull_url}" target="_blank" rel="noopener noreferrer">
-			<Card.Header class="p-2 pb-0 flex flex-row items-start gap-2">
+		<div class="flex justify-between items-start gap-2">
+			<Card.Header class={`${submissionData.status !== "merged" ? "opacity-30" : ""} p-2 pb-0 flex flex-row items-start gap-2`}>
 				<Avatar.Root>
-					<Avatar.Image src="{submissionData.owner?.avatar_url}" alt="{submissionData.owner?.login}" />
-					<Avatar.Fallback>{submissionData.owner?.login[0]}</Avatar.Fallback>
+					<Avatar.Image src="{submissionData.owner.avatar_url}" alt="{submissionData.owner.login}" />
+					<Avatar.Fallback>{submissionData.owner.login[0]}</Avatar.Fallback>
 				</Avatar.Root>
 				<div>
-					<Card.Title>{submissionData.name}</Card.Title>
-					<Card.Description>{submissionData.owner?.login}</Card.Description>
+					<Card.Title><a href="{submissionData.pull_url}" target="_blank" rel="noopener noreferrer">{submissionData.name}</a></Card.Title>
+					<Card.Description><a href="{submissionData.pull_url}" target="_blank" rel="noopener noreferrer">{submissionData.owner.login}</a></Card.Description>
 				</div>
 			</Card.Header>
-		</a>
-		<Card.Content class="p-3 grow pt-0">
+			<!-- {#if submissionData.status !== "merged"}
+				<Button size="sm" class="m-2 font-semibold cursor-pointer active:scale-[105%] transition-transform duration-200">
+					Refresh	
+				</Button>
+			{/if} -->
+		</div>
+		<Card.Content class={`${submissionData.status !== "merged" ? "opacity-30" : ""} p-3 grow pt-0`}>
 			<p class="overflow-auto text-justify">{submissionData.description ?? "No description available."}</p>
 			<br />
 			<Table.Root class="text-sm">
@@ -134,7 +144,11 @@
 		</Card.Content>
 		<Separator class="" />
 		<Card.Footer class="p-2 flex justify-between gap-2">
-			<p class="px-2 grow"><span class="font-bold">Points:</span> {submissionData.status === "merged" ? submissionData.points : 0}</p>
+			{#if submissionData.status === "merged"}
+				<p class="px-2 grow"><span class="font-bold">Points:</span> {submissionData.points}</p>
+			{:else}
+				<p class="italic font-semibold px-2">Not merged yet!</p>
+			{/if}
 			<p class="px-2 font-semibold">{submissionData.mergedAt?.toLocaleDateString("en", { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
 		</Card.Footer>
 	</Card.Root>

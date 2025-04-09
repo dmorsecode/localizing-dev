@@ -11,7 +11,7 @@ import { getBookmarksForUser } from '$lib/server/services/bookmarkService';
 import { addTagsToRequest } from '$lib/server/services/tagService';
 import { getSubmissionsByTranslatorId, createSubmission } from '$lib/server/services/submissionService';
 import { isUserIdOnLeaderboard, createLeaderboardEntry, incrementLeaderboardScore, getLeaderboardEntryByUserId } from '$lib/server/services/leaderboardService';
-import { fetchDiffData } from '$lib/server/github/apiServices';
+import { fetchDiffData, fetchRepoData } from '$lib/server/github/apiServices';
 
 
 export async function load(event: RequestEvent) {
@@ -36,7 +36,7 @@ export async function load(event: RequestEvent) {
 	const repos = await reposRes.json();
 
 	const requests = await getRequestsByUser(event.locals.user.id);
-	const submissions = await getSubmissionsByTranslatorId(event.locals.user.id);
+	const submissions = await getSubmissionsByTranslatorId(event.locals.user.id, false);
 	const bookmarks = await getBookmarksForUser(event.locals.user.id, true);
 	const leaderboardScore = await getLeaderboardEntryByUserId(event.locals.user.id);
 
@@ -141,7 +141,10 @@ async function submitSubmission(event: RequestEvent) {
 async function addRepo(event: RequestEvent) {
 	const form = await superValidate(event, zod(requestFormSchema));
 	const url = new URL(form.data.url);
-	if (url.hostname !== 'github.com' || url.pathname.split('/')[1].toLowerCase() !== event.locals.user?.username.toLowerCase()) {
+
+	const repoData = await fetchRepoData(url.pathname.substring(1), event.locals.session?.githubToken ?? null);
+
+	if (url.hostname !== 'github.com' || repoData.owner.login.toLowerCase() !== event.locals.user!.username.toLowerCase()) {
 		return fail(400, {
 			form
 		});
@@ -154,10 +157,14 @@ async function addRepo(event: RequestEvent) {
 	}
 
 	const requestObject = {
-		requestor_id: event.locals.user.id,
+		requestor_id: event.locals.user!.id,
 		repo_url: form.data.url,
+		repo_name: repoData.name,
 		status: 'open',
-		description: form.data.description
+		description: form.data.description,
+		kb_size: repoData.size,
+		star_size: repoData.stargazers_count,
+		license: repoData.license?.key ?? null,
 	};
 	const reqResponse = await createRequest(requestObject);
 	for (let i = 0; i < form.data.currentLangs.length; i++) {

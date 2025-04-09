@@ -64,3 +64,11 @@ export const deleteBookmark = async (user_id: string, request_id: string) => {
       ))
     .returning();
 };
+
+//Delete all bookmarks with a matching requestId
+export const deleteBookmarksForRequest = async (request_id: string) => {
+  return await db
+    .delete(schema.bookmarks)
+    .where(eq(schema.bookmarks.request_id, request_id))
+    .returning();
+};

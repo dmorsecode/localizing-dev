@@ -174,7 +174,6 @@
 		<Form.FieldErrors />
 	</Form.Field>
 
-	<Spinner />
 	<Form.Button class="font-semibold">
 		{#if $submitting}
 			<Spinner />

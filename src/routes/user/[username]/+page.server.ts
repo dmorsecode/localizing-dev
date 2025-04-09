@@ -24,8 +24,6 @@ export async function load({ params }: RequestEvent) {
 	const requests = await getRequestsByUser(userProfile.id);
 	const submissions = await getSubmissionsByTranslatorId(userProfile.id);
 
-	console.log(submissions);
-
 	return {
 		userProfile: await userProfile,
 		requests: await requests,

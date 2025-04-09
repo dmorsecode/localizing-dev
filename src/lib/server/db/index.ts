@@ -1,10 +1,11 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
+import * as schema from './schema';
 import postgres from 'postgres';
 import * as env from '$env/static/private';
 
 if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
 const client = postgres(env.DATABASE_URL);
-export const db = drizzle(client);
+export const db = drizzle(client, { schema });
 
 await db.execute(`
 
@@ -34,6 +35,7 @@ CREATE TABLE IF NOT EXISTS "requests" (
 	r_id text PRIMARY KEY,
 	requestor_id text NOT NULL REFERENCES "user" (id),
 	repo_URL text NOT NULL,
+	repo_name text NOT NULL,
 	status text DEFAULT 'open',
 	description text,
 	kb_size integer,

@@ -3,8 +3,6 @@
   import * as Avatar from '$lib/components/ui/avatar';
 
 	let { data }: PageProps = $props();
-
-  console.log(data.leaderboard);
 </script>
 
 {#await data then { leaderboard }}
