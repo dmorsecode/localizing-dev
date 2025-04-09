@@ -103,18 +103,28 @@ export const bookmarks = pgTable('bookmarks', {
 /* RELATIONS */
 
 export const requestRelations = relations(requests, ({ one, many }) => ({
+	requestor: one(user, {
+	  fields: [requests.requestor_id],
+	  references: [user.id],
+	}),
 	requested_languages: many(languages),
 	cur_languages: many(cur_languages),
 	tags: many(tags),
 	submissions: many(submission)
-}));
+  }));
+  
 
-export const userRelations = relations(user, ({ one, many }) => ({
+  export const userRelations = relations(user, ({ one, many }) => ({
 	requests: many(requests),
 	submissions: many(submission),
 	bookmarks: many(bookmarks),
-	leaderboard: one(leaderboard)
-}));
+	leaderboard: one(leaderboard, {
+	  fields: [user.id],
+	  references: [leaderboard.user_id],
+	})
+  }));
+  
+  
 
 export const languagesRelations = relations(languages, ({ one, many }) => ({
 	request: one(requests, {
