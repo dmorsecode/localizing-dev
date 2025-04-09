@@ -1,4 +1,5 @@
 <script lang="ts">
+	import * as m from "$lib/paraglide/messages.js";
 	import * as Card from '$lib/components/ui/card';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as Table from '$lib/components/ui/table';
@@ -117,7 +118,7 @@
 				<Table.Body>
 					<Table.Row>
 						<Table.Cell class="px-2 align-top font-semibold">
-							<p>Localization</p>
+							<p>{m.localization()}</p>
 						</Table.Cell>
 						<Table.Cell class="px-0">
 							<p>{LANGS.find((l) => l.code === submissionData.language)?.name}</p>
@@ -125,7 +126,7 @@
 					</Table.Row>
 					<Table.Row>
 						<Table.Cell class="px-2 align-top">
-							<p>Additions</p>
+							<p>{m.submission_additions()}</p>
 						</Table.Cell>
 						<Table.Cell class="px-0 text-left">
 							<p>{submissionData.additions}</p>
@@ -133,7 +134,7 @@
 					</Table.Row>
 					<Table.Row>
 						<Table.Cell class="px-2 align-top">
-							<p>PR Size</p>
+							<p>{m.submission_pr_size()}</p>
 						</Table.Cell>
 						<Table.Cell class="px-0">
 							<p>{submissionData.diffSize} <small>Kb</small></p>
@@ -145,9 +146,9 @@
 		<Separator class="" />
 		<Card.Footer class="p-2 flex justify-between gap-2">
 			{#if submissionData.status === "merged"}
-				<p class="px-2 grow"><span class="font-bold">Points:</span> {submissionData.points}</p>
+				<p class="px-2 grow"><span class="font-bold">{m.points()}:</span> {submissionData.points}</p>
 			{:else}
-				<p class="italic font-semibold px-2">Not merged yet!</p>
+				<p class="italic font-semibold px-2">{m.submission_not_merged()}</p>
 			{/if}
 			<p class="px-2 font-semibold">{submissionData.mergedAt?.toLocaleDateString("en", { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
 		</Card.Footer>

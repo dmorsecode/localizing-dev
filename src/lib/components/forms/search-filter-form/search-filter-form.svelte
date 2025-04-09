@@ -1,4 +1,5 @@
 <script lang="ts">
+	import * as m from "$lib/paraglide/messages.js";
 	import { invalidate, invalidateAll } from '$app/navigation';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
@@ -68,7 +69,7 @@
 	<div class="grow basis-1/5">
 		<Form.Field {form} name="repoName">
 			<Form.Control let:attrs>
-				<Form.Label class="font-semibold">Repository Name</Form.Label>
+				<Form.Label class="font-semibold">{m.search_form_repository_name()}</Form.Label>
 				<Input {...attrs} bind:value={$formData.repoName} />
 			</Form.Control>
 			<Form.FieldErrors />
@@ -76,7 +77,7 @@
 
 		<Form.Field {form} name="currentLang">
 			<Form.Control let:attrs>
-				<Form.Label class="font-semibold">Original Language</Form.Label>
+				<Form.Label class="font-semibold">{m.search_form_original_language()}</Form.Label>
 				<Select.Root onSelectedChange={(v) => {
 						if (!v || typeof v.value !== "string") return;
 						$formData.currentLang = v.value;
@@ -97,7 +98,7 @@
 
 		<Form.Field {form} name="requestedLang">
 			<Form.Control let:attrs>
-				<Form.Label class="font-semibold">Requested Language</Form.Label>
+				<Form.Label class="font-semibold">{m.search_form_requested_language()}</Form.Label>
 				<Select.Root onSelectedChange={(v) => {
 						if (!v || typeof v.value !== "string") return;
 						$formData.requestedLang = v.value;
@@ -121,15 +122,15 @@
 		<div class="flex flex-row gap-4 items-center">
 			<Form.Field {form} name="minKb">
 				<Form.Control let:attrs>
-					<Form.Label class="font-semibold">Minimum Kb.</Form.Label>
+					<Form.Label class="font-semibold">{m.search_form_min_kb()}</Form.Label>
 					<Input {...attrs} bind:value={$formData.minKb} type="text" placeholder="0" />
 				</Form.Control>
 				<Form.FieldErrors />
 			</Form.Field>
 			<Form.Field {form} name="maxKb">
 				<Form.Control let:attrs>
-					<Form.Label class="font-semibold">Maximum Kb.</Form.Label>
-					<Input {...attrs} bind:value={$formData.maxKb} type="text" placeholder="Unlimited" />
+					<Form.Label class="font-semibold">{m.search_form_max_kb()}</Form.Label>
+					<Input {...attrs} bind:value={$formData.maxKb} type="text" placeholder={m.search_form_unlimited()} />
 				</Form.Control>
 				<Form.FieldErrors />
 			</Form.Field>
@@ -138,15 +139,15 @@
 		<div class="flex flex-row gap-4 items-center">
 			<Form.Field {form} name="minStars">
 				<Form.Control let:attrs>
-					<Form.Label class="font-semibold">Minimum Stars</Form.Label>
+					<Form.Label class="font-semibold">{m.search_form_min_stars()}</Form.Label>
 					<Input {...attrs} bind:value={$formData.minStars} type="text" placeholder="0" />
 				</Form.Control>
 				<Form.FieldErrors />
 			</Form.Field>
 			<Form.Field {form} name="maxStars">
 				<Form.Control let:attrs>
-					<Form.Label class="font-semibold">Maximum Stars</Form.Label>
-					<Input {...attrs} bind:value={$formData.maxStars} type="text" placeholder="Unlimited" />
+					<Form.Label class="font-semibold">{m.search_form_max_stars()}</Form.Label>
+					<Input {...attrs} bind:value={$formData.maxStars} type="text" placeholder={m.search_form_unlimited()} />
 				</Form.Control>
 				<Form.FieldErrors />
 			</Form.Field>
@@ -154,7 +155,7 @@
 
 		<Form.Field {form} name="license">
 			<Form.Control let:attrs>
-				<Form.Label class="font-semibold">License</Form.Label>
+				<Form.Label class="font-semibold">{m.license()}</Form.Label>
 				<Select.Root onSelectedChange={(v) => {
 					if (!v || typeof v.value !== "string") return;
 					$formData.license = v.value;
@@ -163,7 +164,7 @@
 						<Select.Value />
 					</Select.Trigger>
 					<Select.Content>
-						<Select.Item value="none" label="No License" />
+						<Select.Item value="none" label={m.no_license()} />
 						{#each licenses as license}
 							<Select.Item value={license.key} label={license.name} />
 						{/each}
@@ -179,7 +180,7 @@
 	<div class="basis-1/3 flex flex-col grow justify-between">
 		<Form.Field {form} name="tags">
 			<Form.Control>
-				<Form.Label class="font-semibold">Required Tags</Form.Label>
+				<Form.Label class="font-semibold">{m.search_form_required_tags()}</Form.Label>
 				<div class="flex gap-2 items-center">
 					<!-- listen for someone pressing enter when typing in the input to add the tag and also log it to console -->
 					<Input placeholder="Add tags" on:keydown={(e) => {
@@ -203,7 +204,7 @@
 			{#if $submitting}
 				<Spinner />
 			{:else}
-				Apply Filters
+				{m.search_form_apply()}
 			{/if}
 		</Form.Button>
 	</div>

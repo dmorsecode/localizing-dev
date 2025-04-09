@@ -13,7 +13,6 @@ import { getSubmissionsByTranslatorId, createSubmission } from '$lib/server/serv
 import { isUserIdOnLeaderboard, createLeaderboardEntry, incrementLeaderboardScore, getLeaderboardEntryByUserId } from '$lib/server/services/leaderboardService';
 import { fetchDiffData, fetchRepoData } from '$lib/server/github/apiServices';
 
-
 export async function load(event: RequestEvent) {
 	if (event.locals.user === null) return;
 

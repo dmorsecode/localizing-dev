@@ -1,4 +1,5 @@
 <script lang="ts">
+	import * as m from "$lib/paraglide/messages.js";
 	import * as Select from "$lib/components/ui/select/index.js";
 
 	const tags = [
@@ -21,7 +22,7 @@
 	</Select.Trigger>
 	<Select.Content>
 		<Select.Group>
-			<Select.Label>Tags</Select.Label>
+			<Select.Label>{m.tags()}</Select.Label>
 			{#each tags as tag}
 				<Select.Item value={tag.value} label={tag.label}
 				>{tag.label}</Select.Item

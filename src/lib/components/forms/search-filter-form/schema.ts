@@ -1,11 +1,12 @@
 import { z } from "zod";
+import * as m from "$lib/paraglide/messages.js";
 
 const numberInString = z.onumber().or(z.ostring()).transform((val, ctx) => {
 	const parsed= parseInt(val as string ?? '');
 	if (isNaN(parsed) && val !== '') {
 	  ctx.addIssue({
 		code: z.ZodIssueCode.custom,
-		message: "Please use digits only.",
+		message: m.form_error_digits(),
 	  });
 	  return z.NEVER;
 	} else if (val === '') return null;

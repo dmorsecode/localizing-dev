@@ -1,4 +1,5 @@
 <script lang="ts">
+	import * as m from "$lib/paraglide/messages.js";
 	import type { PageProps } from './$types';
 	import ProfileBanner from '$lib/components/display/profile-banner/profile-banner.svelte';
 	import { Separator } from '$lib/components/ui/separator';
@@ -13,14 +14,14 @@
 	<Separator class="my-4" />
 
 	<div class="flex flex-col gap-4">
-		<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">Requests</h1>
+		<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">{m.requests()}</h1>
 		<DashboardGrid reposToDisplay={requests} userRepos={repos} form={requestForm} />
 	</div>
 
 	<Separator class="my-6" />
 
 	<div class="flex flex-col gap-4">
-		<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">Contributions</h1>
+		<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">{m.contributions()}</h1>
 		<DashboardGrid reposToDisplay={submissions} userRepos={repos} form={submissionForm} />
 	</div>
 
@@ -28,7 +29,7 @@
 		<Separator class="my-6" />
 
 		<div class="flex flex-col gap-4">
-			<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">Bookmarks</h1>
+			<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">{m.bookmarks()}</h1>
 			<DashboardGrid reposToDisplay={bookmarks} bookmarks={true} userRepos={null} form={null} />
 		</div>
 	{/if}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import * as m from "$lib/paraglide/messages.js";
 	import type { PageProps } from './$types';
 	import { goto } from "$app/navigation";
 	import { invalidate, invalidateAll } from '$app/navigation';
@@ -18,8 +19,8 @@
 </script>
 
 <div class="flex flex-col gap-2 bg-cyan-300 p-4 rounded-lg">
-	<h1 class="text-2xl font-bold">Open Repositories</h1>
-	<h2 class="text-lg font-semibold">Find a repository to contribute to.</h2>
+	<h1 class="text-2xl font-bold">{m.repositories_title()}</h1>
+	<h2 class="text-lg font-semibold">{m.repositories_subtitle()}</h2>
 	{#key data.searchForm}
 		<SearchFilterForm data={data.searchForm!} />
 	{/key}
@@ -42,7 +43,7 @@
 		<Pagination.Item class="cursor-pointer">
 			<Pagination.PrevButton class="cursor-pointer">
 			<ChevronLeft class="h-4 w-4" />
-			<span class="hidden sm:block">Previous</span>
+			<span class="hidden sm:block">{m.previous()}</span>
 			</Pagination.PrevButton>
 		</Pagination.Item>
 		{#each pages as page (page.key)}
@@ -60,7 +61,7 @@
 		{/each}
 		<Pagination.Item class="cursor-pointer">
 			<Pagination.NextButton class="cursor-pointer">
-				<span class="hidden sm:block">Next</span>
+				<span class="hidden sm:block">{m.next()}</span>
 				<ChevronRight class="h-4 w-4" />
 			</Pagination.NextButton>
 		</Pagination.Item>
