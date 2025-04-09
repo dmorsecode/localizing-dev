@@ -1,4 +1,5 @@
 <script lang="ts">
+	import * as m from "$lib/paraglide/messages.js";
 	import { invalidate, invalidateAll } from '$app/navigation';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
@@ -59,18 +60,18 @@
 
 </script>
 
-<h1 class="font-bold text-2xl mb-8">Submit a Repository for Localization</h1>
+<h1 class="font-bold text-2xl mb-8">{m.request_form_title()}</h1>
 <form method="POST" action="?/request" use:enhance class="flex flex-col gap-4">
 	<Form.Field {form} name="url">
 		<Form.Control let:attrs>
-			<Form.Label class="font-semibold">Repository</Form.Label>
+			<Form.Label class="font-semibold">{m.repository()}</Form.Label>
 			<Select.Root selected={selectedRepo} onSelectedChange={(v) => {
 				if (!v) return;
 				$formData.url = v.value;
 				$formData.description = repos.find((repo) => repo.html_url === v.value)?.description ?? "";
 			}}>
 				<Select.Trigger {...attrs}>
-					<Select.Value placeholder="Select a repository" />
+					<Select.Value placeholder={m.request_form_repo_select()} />
 				</Select.Trigger>
 				<Select.Content>
 					{#each repos as repo}
@@ -86,7 +87,7 @@
 
 	<Form.Field {form} name="currentLangs">
 		<Form.Control let:attrs>
-			<Form.Label class="font-semibold">Current Languages</Form.Label>
+			<Form.Label class="font-semibold">{m.request_form_current_languages()}</Form.Label>
 			<Select.Root bind:open={curSelectOpen} multiple={true} onSelectedChange={(v) => {
 				if (!v) return;
 				$formData.currentLangs = v.map((value) => {
@@ -98,7 +99,7 @@
 				curSelectOpen = false;
 			}}>
 				<Select.Trigger {...attrs}>
-					<Select.Value placeholder="Select a language" />
+					<Select.Value placeholder={m.select_a_language()} />
 				</Select.Trigger>
 				<Select.Content class="max-h-1/3 overflow-y-scroll">
 					{#each LANGS as lang}
@@ -114,7 +115,7 @@
 
 	<Form.Field {form} name="requestedLangs">
 		<Form.Control let:attrs>
-			<Form.Label class="font-semibold">Requested Languages</Form.Label>
+			<Form.Label class="font-semibold">{m.request_form_requested_languages()}</Form.Label>
 			<Select.Root bind:open={reqSelectOpen} multiple={true} onSelectedChange={(v) => {
 				if (!v) return;
 				$formData.requestedLangs = v.map((value) => {
@@ -126,7 +127,7 @@
 				reqSelectOpen = false;
 			}}>
 				<Select.Trigger {...attrs}>
-					<Select.Value placeholder="Select a language" />
+					<Select.Value placeholder={m.select_a_language()} />
 				</Select.Trigger>
 				<Select.Content class="max-h-1/3 overflow-y-scroll">
 					{#each LANGS as lang}
@@ -142,9 +143,9 @@
 
 	<Form.Field {form} name="description">
 		<Form.Control let:attrs>
-			<Form.Label class="font-semibold">Project Description</Form.Label>
+			<Form.Label class="font-semibold">{m.request_form_description()}</Form.Label>
 			<Textarea disabled={!$formData.url} {...attrs}
-								placeholder={$formData.url ? "Describe your project here." : "Please select a repository."}
+								placeholder={$formData.url ? m.request_form_describe() : m.request_form_repo_select()}
 								bind:value={$formData.description} />
 		</Form.Control>
 		<!--		<Form.Description>A short description of your repository.</Form.Description>-->
@@ -153,10 +154,10 @@
 
 	<Form.Field {form} name="tags">
 		<Form.Control>
-			<Form.Label class="font-semibold">Tags</Form.Label>
+			<Form.Label class="font-semibold">{m.tags()}</Form.Label>
 			<div class="flex gap-2 items-center">
 				<!-- listen for someone pressing enter when typing in the input to add the tag and also log it to console -->
-				<Input placeholder="Add tags" on:keydown={(e) => {
+				<Input placeholder={m.request_form_add_tags()} on:keydown={(e) => {
 					if (e.key === 'Enter' || e.key === ',') {
 						e.preventDefault();
 						if (e.currentTarget.value === '') return;
@@ -178,7 +179,7 @@
 		{#if $submitting}
 			<Spinner />
 		{:else}
-			Submit
+			{m.submit()}
 		{/if}
 	</Form.Button>
 </form>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import * as m from "$lib/paraglide/messages.js";
 	import RequestCard from '$lib/components/display/repos/request-card.svelte';
 	import SubmissionCard from '$lib/components/display/repos/submission-card.svelte';
 	import RepoAdd from '$lib/components/display/repos/repo-add.svelte';
@@ -25,7 +26,7 @@
 
 <div class="flex flex-wrap gap-4">
 	{#if (reposToDisplay === null || reposToDisplay?.length === 0) && !dashboard}
-		<p class="text-center text-muted-foreground">No repositories found.</p>
+		<p class="text-center text-muted-foreground">{m.no_repos_found()}</p>
 	{/if}
 	{#key reposToDisplay}
 		{#each reposToDisplay as repo}

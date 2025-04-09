@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
+	import * as m from "$lib/paraglide/messages.js";
 	import * as Card from '$lib/components/ui/card';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as Table from '$lib/components/ui/table';
@@ -176,8 +177,8 @@
 			<Table.Root class="text-xs">
 				<Table.Header>
 					<Table.Row>
-						<Table.Head class="px-2">Original</Table.Head>
-						<Table.Head class="px-0">Requested</Table.Head>
+						<Table.Head class="px-2">{m.request_original()}</Table.Head>
+						<Table.Head class="px-0">{m.request_requested()}</Table.Head>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -211,36 +212,36 @@
 				</Popover.Root>
 				<Button href={`${repoData.html_url + "/fork"}`} target="_blank" rel="noopener noreferrer" variant="outline">
 					<GitFork size={16} class="mr-2" />
-					Contribute
+					{m.request_contribute()}
 				</Button>
 			{:else}
 				<Dialog.Root bind:open={isOpen}>
 					<Dialog.Trigger>
 						<Button variant="outline" class="cursor-pointer">
-							Close
+							{m.close()}
 						</Button>
 					</Dialog.Trigger>
 					<Dialog.Content>
-						<h1 class="font-bold text-xl">Are you sure?</h1>
-						<p>Closing a request will remove it from the repository listing and your dashboard. Submissions already posted for your repository will not be affected.</p>
-						<p>This cannot be undone.</p>
+						<h1 class="font-bold text-xl">{m.are_you_sure()}</h1>
+						<p>{m.request_close_desc()}</p>
+						<p>{m.cannot_be_undone()}</p>
 						<div class="flex mt-4 gap-4">
 							<Button variant="destructive" class="min-w-1/3 cursor-pointer" on:click={deleteRepo}>
 								{#if isDeleting}
 									<Spinner />
 								{:else}
-									Close Request
+									{m.request_close_request()}
 								{/if}
 							</Button>
 							<Button variant="outline" class="cursor-pointer" on:click={modalClose}>
-								Cancel
+								{m.cancel()}
 							</Button>
 						</div>
 					</Dialog.Content>
 				</Dialog.Root>
 				<Button href={`${repoData.html_url + "/pulls"}`} target="_blank" rel="noopener noreferrer" variant="outline">
 					<GitPullRequest size={16} class="mr-2" />
-					View
+					{m.view()}
 				</Button>
 			{/if}
 		</Card.Footer>

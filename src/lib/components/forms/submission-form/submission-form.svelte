@@ -1,4 +1,5 @@
 <script lang="ts">
+	import * as m from "$lib/paraglide/messages.js";
 	import { invalidateAll } from '$app/navigation';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
@@ -32,25 +33,25 @@
 
 </script>
 
-<h1 class="font-bold text-2xl mb-8">Submit a Repository for Localization</h1>
+<h1 class="font-bold text-2xl mb-8">{m.submission_form_title()}</h1>
 <form method="POST" action="?/submission" use:enhance class="flex flex-col gap-4">
 	<Form.Field {form} name="url">
 		<Form.Control let:attrs>
-			<Form.Label class="font-semibold">Repository</Form.Label>
-			<Input {...attrs} bind:value={$formData.url} placeholder="Pull Request URL" />
+			<Form.Label class="font-semibold">{m.repository()}</Form.Label>
+			<Input {...attrs} bind:value={$formData.url} placeholder={m.submission_form_pull_placeholder()} />
 		</Form.Control>
 		<Form.FieldErrors />
 	</Form.Field>
 
 	<Form.Field {form} name="providedLanguage">
 		<Form.Control let:attrs>
-			<Form.Label class="font-semibold">Localization</Form.Label>
+			<Form.Label class="font-semibold">{m.localization()}</Form.Label>
 			<Select.Root onSelectedChange={(v) => {
 					if (!v || typeof v.value !== "string") return;
 					$formData.providedLanguage = v.value;
         }}>
 				<Select.Trigger {...attrs}>
-					<Select.Value placeholder="Select a language" />
+					<Select.Value placeholder={m.select_a_language()} />
 				</Select.Trigger>
 				<Select.Content class="max-h-1/2 overflow-y-scroll">
 					{#each LANGS as lang}
@@ -60,7 +61,7 @@
 			</Select.Root>
 			<input hidden bind:value={$formData.providedLanguage} name={attrs.name} />
 		</Form.Control>
-				<Form.Description>What language did you translate the repository into?</Form.Description>
+				<Form.Description>{m.submission_form_desc()}</Form.Description>
 		<Form.FieldErrors />
 	</Form.Field>
 
@@ -69,7 +70,7 @@
 		{#if $submitting}
 			<Spinner />
 		{:else}
-			Submit
+			{m.submit()}
 		{/if}
 	</Form.Button>
 </form>

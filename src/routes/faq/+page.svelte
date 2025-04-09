@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as m from "$lib/paraglide/messages.js";
   import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "$lib/components/ui/accordion";
   import { Input } from "$lib/components/ui/input";
 
@@ -15,28 +16,28 @@
   const faqItems = [
     {
       id: "github-account",
-      question: "Do I need a github account?",
-      answer: "Yes, since Localizing.dev integrates directly with GitHub repositories, a GitHub account is required to contribute and manage projects."
+      question: m.faqs_account_question(),
+      answer: m.faqs_account_answer()
     },
     {
       id: "contribute",
-      question: "How can I contribute to a project?",
-      answer: "Please log in with your Github account and go to Respositories, select the repository you'd like to send a contribution to."
+      question: m.faqs_contribute_question(),
+      answer: m.faqs_contribute_answer()
     },
     {
       id: "review",
-      question: "Do translations get reviewed?",
-      answer: "Your translations will get reviewed by the repository owner once they are sent, and you will be notified once they are approved."
+      question: m.faqs_review_question(),
+      answer: m.faqs_review_answer()
     },
     {
-      id: "cost",
-      question: "Is there a cost for using Localizing.dev?",
-      answer: "No, the program is completely free."
+      id: "submit",
+      question: m.faqs_submit_question(),
+      answer: m.faqs_submit_answer()
     },
     {
       id: "leaderboard",
-      question: "How does the leaderboard work?",
-      answer: "Your accepted contributions will generate a score that will be added to your dashboard. Every week, our leaderboard will be updated with the rankings of all users that had the highest contribution score. Please keep putting the good work to reach the top!"
+      question: m.faqs_leaderboard_question(),
+      answer: m.faqs_leaderboard_answer()
     }
   ];
 
@@ -47,13 +48,13 @@
 </script>
 
 <div class="container mx-auto px-4 py-8 max-w-4xl">
-  <h1 class="text-4xl font-bold mb-4">Frequently Asked Questions</h1>
-  <p class="text-gray-600 mb-8">Lost on how to start your translator-collaborator journey? We got you covered. Find answers to common questions about Localizing.dev</p>
+  <h1 class="text-4xl font-bold mb-4">{m.faqs_title()}</h1>
+  <p class="text-gray-600 mb-8">{m.faqs_subtitle()}</p>
   
   <div class="mb-8">
     <Input
       type="text"
-      placeholder="Search questions..."
+      placeholder={m.faqs_search()}
       bind:value={searchQuery}
       class="w-full"
     />
