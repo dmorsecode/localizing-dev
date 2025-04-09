@@ -5,9 +5,6 @@ import { getSubmissionsByTranslatorId } from '$lib/server/services/submissionSer
 import { getLeaderboardEntryByUserId } from '$lib/server/services/leaderboardService';
 import { getUserByUsername } from '$lib/server/services/userService';
 
-export const ssr = true;
-export const prerender = true;
-
 export async function load({ params }: RequestEvent) {
 	const username = await getUserByUsername(params.username);
 	if (!username) {
