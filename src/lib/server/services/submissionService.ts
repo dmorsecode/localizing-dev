@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import * as schema from '$lib/server/db/schema';
 
@@ -7,17 +7,23 @@ export const createSubmission = async ({
   request_id,
   translator_id,
   pull_url,
-  status = 'on review'
+  provided_language,
+  earned_points,
+  status = 'on review',
 }: {
   request_id: string;
   translator_id: string;
   pull_url: string;
+  provided_language: string;
+  earned_points: number;
   status?: string;
 }) => {
   return await db.insert(schema.submission).values({
     request_id,
     translator_id,
     pull_url,
+    provided_language,
+    earned_points,
     status
   }).returning();
 };
@@ -42,11 +48,25 @@ export const getSubmissionsByRequestId = async (request_id: string) => {
 };
 
 //Get all submissions by translator
-export const getSubmissionsByTranslatorId = async (translator_id: string) => {
+export const getSubmissionsByTranslatorId = async (translator_id: string, merged: boolean = true) => {
   return await db
     .select()
     .from(schema.submission)
-    .where(eq(schema.submission.translator_id, translator_id));
+    .where(and(
+      eq(schema.submission.translator_id, translator_id),
+      merged ? eq(schema.submission.status, "merged") : undefined
+    ))
+};
+
+// Get submission by pull_url
+export const getSubmissionByPullUrl = async (pull_url: string) => {
+  const result = await db
+    .select()
+    .from(schema.submission)
+    .where(eq(schema.submission.pull_url, pull_url))
+    .limit(1);
+
+  return result[0] ?? null;
 };
 
 //Update a submission

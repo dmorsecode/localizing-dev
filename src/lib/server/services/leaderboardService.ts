@@ -11,6 +11,17 @@ export const createLeaderboardEntry = async (user_id: string, l_score = 0, is_ac
   }).returning();
 };
 
+// Check whether a user has a leaderboard entry, optionally checking whether it's active
+export const isUserIdOnLeaderboard = async (user_id: string) => {
+  const rows = await db
+    .select()
+    .from(schema.leaderboard)
+    .where(eq(schema.leaderboard.user_id, user_id))
+    .limit(1);
+
+  return rows.length > 0;
+}
+
 //Get a leaderboard entry by user ID
 export const getLeaderboardEntryByUserId = async (user_id: string) => {
     const rows = await db
@@ -29,6 +40,7 @@ export const getFullLeaderboard = async () => {
     .select()
     .from(schema.leaderboard)
     .where(eq(schema.leaderboard.is_active, true))
+    .innerJoin(schema.user, eq(schema.leaderboard.user_id, schema.user.id))
     .orderBy(desc(schema.leaderboard.l_score));
 };
 

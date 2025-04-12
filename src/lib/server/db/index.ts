@@ -1,10 +1,11 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
+import * as schema from './schema';
 import postgres from 'postgres';
-import { env } from '$env/dynamic/private';
+import * as env from '$env/static/private';
 
 if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
 const client = postgres(env.DATABASE_URL);
-export const db = drizzle(client);
+export const db = drizzle(client, { schema });
 
 await db.execute(`
 
@@ -21,7 +22,8 @@ CREATE TABLE IF NOT EXISTS "user" (
 CREATE TABLE IF NOT EXISTS "session" (
 	id text PRIMARY KEY,
 	user_id text REFERENCES "user" (id),
-	expires_at timestamp with time zone NOT NULL
+	expires_at timestamp with time zone NOT NULL,
+	github_token text NOT NULL
 );
 CREATE TABLE IF NOT EXISTS "leaderboard" (
 	l_id text PRIMARY KEY,
@@ -33,10 +35,12 @@ CREATE TABLE IF NOT EXISTS "requests" (
 	r_id text PRIMARY KEY,
 	requestor_id text NOT NULL REFERENCES "user" (id),
 	repo_URL text NOT NULL,
-	current_language text NOT NULL,
+	repo_name text NOT NULL,
 	status text DEFAULT 'open',
-	tag01 text,
-	tag02 text,
+	description text,
+	kb_size integer,
+	star_size integer,
+	license text,
 	created_at timestamp DEFAULT now(),
 	expires_at timestamp DEFAULT (now() + '60 days'::interval)
 );
@@ -50,13 +54,20 @@ CREATE TABLE IF NOT EXISTS tags (
 	tag TEXT NOT NULL,
 	PRIMARY KEY (request_id, tag)
 );
+CREATE TABLE IF NOT EXISTS "cur_languages" (
+	request_id TEXT NOT NULL REFERENCES "requests" (r_id) ON DELETE CASCADE,
+	language TEXT NOT NULL,
+	PRIMARY KEY (request_id, language)
+);
 CREATE TABLE IF NOT EXISTS "submission" (
 	s_id text PRIMARY KEY,
 	request_id text NOT NULL REFERENCES "requests" (r_id),
 	translator_id text NOT NULL REFERENCES "user" (id),
 	pull_url text,
+	provided_language text,
 	submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-	status text DEFAULT 'on review'::text
+	status text DEFAULT 'on review'::text,
+	earned_points integer DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS "reviews" (
 	rv_id text PRIMARY KEY,
@@ -73,5 +84,10 @@ CREATE TABLE IF NOT EXISTS "notifications" (
 	type TEXT DEFAULT 'info',
 	is_read INTEGER DEFAULT 0,
 	created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS "bookmarks" (
+	user_id text NOT NULL REFERENCES "user" (id),
+	request_id text NOT NULL REFERENCES "requests" (r_id),
+	PRIMARY KEY (user_id, request_id)
 );
 `);

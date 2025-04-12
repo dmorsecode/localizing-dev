@@ -1,28 +1,36 @@
 <script lang="ts">
+	import * as m from "$lib/paraglide/messages.js";
 	import type { PageProps } from './$types';
 	import ProfileBanner from '$lib/components/display/profile-banner/profile-banner.svelte';
 	import { Separator } from '$lib/components/ui/separator';
-	import RepoGrid from '$lib/components/display/repos/repo-grid.svelte';
+	import DashboardGrid from '$lib/components/display/repos/dashboard-grid.svelte';
 
-	// define a page data interface with form, user, repos, and requests
-	// this is the data that will be passed to the page component
-	export let data: PageProps['data'];
-
-	// let { data }: PageProps = $props();
+	let { data }: PageProps = $props();
 </script>
 
-<ProfileBanner user={data.user} />
+{#await data then { user, requests, submissions, bookmarks, repos, leaderboardScore, requestForm, submissionForm }}
+	<ProfileBanner userInfo={user} score={leaderboardScore?.l_score ?? 0} submissionCount={submissions?.filter(sub => sub.status === "merged").length ?? 0} />
 
-<Separator class="my-4" />
+	<Separator class="my-4" />
 
-<div class="flex flex-col gap-4">
-<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">Requests</h1>
-<RepoGrid reposToDisplay={data.requests} userRepos={data.repos} form={data.form} dashRequests={true} />
-</div>
+	<div class="flex flex-col gap-4">
+		<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">{m.requests()}</h1>
+		<DashboardGrid reposToDisplay={requests} userRepos={repos} form={requestForm} />
+	</div>
 
-<Separator class="my-6" />
+	<Separator class="my-6" />
 
-<div class="flex flex-col gap-4">
-<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">Contributions</h1>
-<RepoGrid reposToDisplay={data.requests} userRepos={data.repos} form={data.form} dashRequests={false} />
-</div>
+	<div class="flex flex-col gap-4">
+		<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">{m.contributions()}</h1>
+		<DashboardGrid reposToDisplay={submissions} userRepos={repos} form={submissionForm} />
+	</div>
+
+	{#if bookmarks !== undefined && bookmarks.length > 0}
+		<Separator class="my-6" />
+
+		<div class="flex flex-col gap-4">
+			<h1 class="text-3xl font-bold underline underline-offset-8 uppercase">{m.bookmarks()}</h1>
+			<DashboardGrid reposToDisplay={bookmarks} bookmarks={true} userRepos={null} form={null} />
+		</div>
+	{/if}
+{/await}

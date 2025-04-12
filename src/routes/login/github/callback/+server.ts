@@ -37,15 +37,15 @@ export async function GET(event: RequestEvent): Promise<Response> {
 
 	const githubUser = await githubUserResponse.json();
 	const githubUserId = githubUser.id;
-	const githubEmail = githubUser.email;
-	const githubUsername = githubUser.login;
+	const githubEmail = githubUser.email?.toLowerCase() ?? null;
+	const githubUsername = githubUser.login.toLowerCase();
 	const githubAvatar = githubUser.avatar_url;
 
 	const existingUser = await getUserFromGitHubId(githubUserId);
 
 	if (existingUser) {
 		const sessionToken = generateSessionToken();
-		const session = await createSession(sessionToken, existingUser.id);
+		const session = await createSession(sessionToken, existingUser.id, tokens.accessToken());
 		setSessionTokenCookie(event, sessionToken, session.expiresAt);
 		return new Response(null, {
 			status: 302,
@@ -58,7 +58,7 @@ export async function GET(event: RequestEvent): Promise<Response> {
 	const user = await createUser(githubUserId, githubEmail, githubUsername, githubAvatar);
 
 	const sessionToken = generateSessionToken();
-	const session = await createSession(sessionToken, user.id);
+	const session = await createSession(sessionToken, user.id, tokens.accessToken());
 	setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
 	return new Response(null, {
